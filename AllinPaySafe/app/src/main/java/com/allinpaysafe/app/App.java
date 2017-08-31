@@ -7,7 +7,7 @@ import android.app.Application;
  *
  */
 
-public class SafeApplication extends Application {
+public class App extends Application {
 
 
 
