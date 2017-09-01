@@ -30,8 +30,29 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha7'
     compile 'com.android.support:design:25.3.1'
     testCompile 'junit:junit:4.12'
-
+//
+    compile 'com.squareup.retrofit2:retrofit:2.0.2'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
+    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'io.reactivex:rxjava:1.1.6'
+    //butterknife
     compile 'com.jakewharton:butterknife:8.1.0'
     apt 'com.jakewharton:butterknife-compiler:8.1.0'
+    //通讯组件
+    compile 'org.greenrobot:eventbus:3.0.0'
+    //解决RxJava内存泄露问题
+    compile 'com.trello:rxlifecycle:0.6.1'
+    compile 'com.trello:rxlifecycle-components:0.6.1'
+    //图片
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    //WaveView 圆形波浪图
+    compile 'com.mikhaellopez:circularfillableloaders:1.2.0'
+//    compile 'com.github.john990:WaveView:v0.9'
     //
+    compile 'me.zhanghai.android.materialprogressbar:library:1.1.6'
+
+//    compile 'com.gelitenight.waveview:waveview:1.0.0'
+
+
 }

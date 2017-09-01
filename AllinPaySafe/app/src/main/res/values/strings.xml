@@ -1,9 +1,13 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="app_name">小工具</string>
     <string name="action_settings">关于</string>
 
     <string name="text_title">小工具</string>
+    <string name="text_clear_memery"> 内存清理</string>
 
+    <string name="text_home_tip">更多小工具,敬请期待</string>
+
+    <string name="cleaned">清理垃圾 (<xliff:g id="memory">%1$s</xliff:g>)</string>
 
 </resources>
