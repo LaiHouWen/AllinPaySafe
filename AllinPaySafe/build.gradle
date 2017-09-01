@@ -6,7 +6,8 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
-
+        //java 8 配置
+        classpath 'me.tatarka:gradle-retrolambda:3.2.5'
         //butterknife 配置 apt
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         // NOTE: Do not place your application dependencies here; they belong
