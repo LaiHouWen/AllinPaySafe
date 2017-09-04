@@ -8,8 +8,8 @@ public class LogUtil {
 	
 	static String className;
 	static String methodName;
-	static int lineNumber;
-	static boolean DEBUGGABLE = BuildConfig.DEBUG; //false/true/BuildConfig.DEBUG
+	static int lineNumber;//BuildConfig.DEBUG
+	static boolean DEBUGGABLE = true; //false/true/BuildConfig.DEBUG
 	
     private LogUtil(){
         /* Protect from instantiations */

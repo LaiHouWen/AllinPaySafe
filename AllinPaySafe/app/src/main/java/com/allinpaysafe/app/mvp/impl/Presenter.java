@@ -6,6 +6,7 @@ import android.os.Bundle;
  * Created by Administrator on 2016/5/4.
  */
 public interface Presenter {
+
     void onCreate(Bundle savedInstanceState);
 
     void onResume();

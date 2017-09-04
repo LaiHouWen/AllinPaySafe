@@ -140,117 +140,117 @@ public class CoreService extends Service {
     }
 
 
-    private class TaskScan
-            extends AsyncTask<Void, Object, List<AppProcessInfo>> {
-
-        private int mAppCount = 0;
-
-        private long mAppMemory = 0;
-
-        private FinalDb mFinalDb = FinalDb.create(mContext);
-        //public TaskScan(FinalDb finalDb) {
-        //    this.mFinalDb = finalDb;
-        //}
-
-
-        @Override protected void onPreExecute() {
-            if (mOnActionListener != null) {
-                mOnActionListener.onScanStarted(CoreService.this);
-            }
-        }
-
-
-        @Override
-        protected List<AppProcessInfo> doInBackground(Void... params) {
-            list = new ArrayList<>();
-            ApplicationInfo appInfo = null;
-            AppProcessInfo abAppProcessInfo = null;
-            //得到所有正在运行的进程
-            List<ActivityManager.RunningAppProcessInfo> appProcessList
-                    = AndroidProcesses.getRunningAppProcessInfo(mContext);
-            publishProgress(0, appProcessList.size(), 0, "开始扫描");
-
-            for (ActivityManager.RunningAppProcessInfo appProcessInfo : appProcessList) {
-                abAppProcessInfo = new AppProcessInfo(
-                        appProcessInfo.processName, appProcessInfo.pid,
-                        appProcessInfo.uid);
-                String packName = appProcessInfo.processName;
-                try {
-                    appInfo = packageManager.getApplicationInfo(
-                            appProcessInfo.processName, 0);
-
-                    if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
-                        abAppProcessInfo.isSystem = true;
-                    }
-                    else {
-                        abAppProcessInfo.isSystem = false;
-                    }
-                    Drawable icon = appInfo.loadIcon(packageManager);
-                    String appName = appInfo.loadLabel(packageManager)
-                                            .toString();
-                    abAppProcessInfo.icon = icon;
-                    abAppProcessInfo.appName = appName;
-                    //abAppProcessInfo.packName = packName;
-                } catch (PackageManager.NameNotFoundException e) {
-                    abAppProcessInfo.icon = mContext.getResources()
-                                                    .getDrawable(
-                                                            R.mipmap.ic_launcher);
-                    //String packName = appProcessInfo.processName;
-                    appInfo = getApplicationInfo(
-                            appProcessInfo.processName.split(":")[0]);
-                    if (appInfo != null) {
-                        Drawable icon = appInfo.loadIcon(packageManager);
-                        abAppProcessInfo.icon = icon;
-                        packName = appProcessInfo.processName.split(":")[0];
-                    }
-                    abAppProcessInfo.isSystem = true;
-                    abAppProcessInfo.appName = appProcessInfo.processName;
-                    //abAppProcessInfo.packName = packName;
-                }
-                abAppProcessInfo.packName = packName;
-                long memory = activityManager.getProcessMemoryInfo(new int[] {
-                        appProcessInfo.pid })[0].getTotalPrivateDirty() * 1024;
-                abAppProcessInfo.memory = memory;
-
-                List<Ignore> ignores = mFinalDb.findAllByWhere(Ignore.class,
-                        "packName='" + abAppProcessInfo.packName + "'");
-                // List<Ignore> ignores = mFinalDb.findAll(Ignore.class);
-                if (ignores.size() == 0) {
-                    list.add(abAppProcessInfo);
-                    mAppMemory += memory;
-                    publishProgress(++mAppCount, appProcessList.size(),
-                            mAppMemory, abAppProcessInfo.processName);
-                }
-            }
-
-            return list;
-        }
-
-
-        @Override protected void onProgressUpdate(Object... values) {
-            if (mOnActionListener != null) {
-                mOnActionListener.onScanProgressUpdated(CoreService.this,
-                        Integer.parseInt(values[0] + ""),
-                        Integer.parseInt(values[1] + ""),
-                        Long.parseLong(values[2] + ""), values[3] + "");
-            }
-        }
-
-
-        @Override protected void onPostExecute(List<AppProcessInfo> result) {
-            if (mOnActionListener != null) {
-                mOnActionListener.onScanCompleted(CoreService.this, result);
-            }
-
-            mIsScanning = false;
-        }
-    }
+//    private class TaskScan
+//            extends AsyncTask<Void, Object, List<AppProcessInfo>> {
+//
+//        private int mAppCount = 0;
+//
+//        private long mAppMemory = 0;
+//
+//        private FinalDb mFinalDb = FinalDb.create(mContext);
+//        //public TaskScan(FinalDb finalDb) {
+//        //    this.mFinalDb = finalDb;
+//        //}
+//
+//
+//        @Override protected void onPreExecute() {
+//            if (mOnActionListener != null) {
+//                mOnActionListener.onScanStarted(CoreService.this);
+//            }
+//        }
+//
+//
+//        @Override
+//        protected List<AppProcessInfo> doInBackground(Void... params) {
+//            list = new ArrayList<>();
+//            ApplicationInfo appInfo = null;
+//            AppProcessInfo abAppProcessInfo = null;
+//            //得到所有正在运行的进程
+//            List<ActivityManager.RunningAppProcessInfo> appProcessList
+//                    = AndroidProcesses.getRunningAppProcessInfo(mContext);
+//            publishProgress(0, appProcessList.size(), 0, "开始扫描");
+//
+//            for (ActivityManager.RunningAppProcessInfo appProcessInfo : appProcessList) {
+//                abAppProcessInfo = new AppProcessInfo(
+//                        appProcessInfo.processName, appProcessInfo.pid,
+//                        appProcessInfo.uid);
+//                String packName = appProcessInfo.processName;
+//                try {
+//                    appInfo = packageManager.getApplicationInfo(
+//                            appProcessInfo.processName, 0);
+//
+//                    if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
+//                        abAppProcessInfo.isSystem = true;
+//                    }
+//                    else {
+//                        abAppProcessInfo.isSystem = false;
+//                    }
+//                    Drawable icon = appInfo.loadIcon(packageManager);
+//                    String appName = appInfo.loadLabel(packageManager)
+//                                            .toString();
+//                    abAppProcessInfo.icon = icon;
+//                    abAppProcessInfo.appName = appName;
+//                    //abAppProcessInfo.packName = packName;
+//                } catch (PackageManager.NameNotFoundException e) {
+//                    abAppProcessInfo.icon = mContext.getResources()
+//                                                    .getDrawable(
+//                                                            R.mipmap.ic_launcher);
+//                    //String packName = appProcessInfo.processName;
+//                    appInfo = getApplicationInfo(
+//                            appProcessInfo.processName.split(":")[0]);
+//                    if (appInfo != null) {
+//                        Drawable icon = appInfo.loadIcon(packageManager);
+//                        abAppProcessInfo.icon = icon;
+//                        packName = appProcessInfo.processName.split(":")[0];
+//                    }
+//                    abAppProcessInfo.isSystem = true;
+//                    abAppProcessInfo.appName = appProcessInfo.processName;
+//                    //abAppProcessInfo.packName = packName;
+//                }
+//                abAppProcessInfo.packName = packName;
+//                long memory = activityManager.getProcessMemoryInfo(new int[] {
+//                        appProcessInfo.pid })[0].getTotalPrivateDirty() * 1024;
+//                abAppProcessInfo.memory = memory;
+//
+//                List<Ignore> ignores = mFinalDb.findAllByWhere(Ignore.class,
+//                        "packName='" + abAppProcessInfo.packName + "'");
+//                // List<Ignore> ignores = mFinalDb.findAll(Ignore.class);
+//                if (ignores.size() == 0) {
+//                    list.add(abAppProcessInfo);
+//                    mAppMemory += memory;
+//                    publishProgress(++mAppCount, appProcessList.size(),
+//                            mAppMemory, abAppProcessInfo.processName);
+//                }
+//            }
+//
+//            return list;
+//        }
+//
+//
+//        @Override protected void onProgressUpdate(Object... values) {
+//            if (mOnActionListener != null) {
+//                mOnActionListener.onScanProgressUpdated(CoreService.this,
+//                        Integer.parseInt(values[0] + ""),
+//                        Integer.parseInt(values[1] + ""),
+//                        Long.parseLong(values[2] + ""), values[3] + "");
+//            }
+//        }
+//
+//
+//        @Override protected void onPostExecute(List<AppProcessInfo> result) {
+//            if (mOnActionListener != null) {
+//                mOnActionListener.onScanCompleted(CoreService.this, result);
+//            }
+//
+//            mIsScanning = false;
+//        }
+//    }
 
 
     public void scanRunProcess() {
         // mIsScanning = true;
         //mFinalDb = finalDb;
-        new TaskScan().execute();
+//        new TaskScan().execute();
     }
 
 
@@ -281,59 +281,59 @@ public class CoreService extends Service {
     }
 
 
-    private class TaskClean extends AsyncTask<Void, Void, Long> {
-
-        private FinalDb mFinalDb = FinalDb.create(mContext);
-
-
-        @Override protected void onPreExecute() {
-            if (mOnActionListener != null) {
-                mOnActionListener.onCleanStarted(CoreService.this);
-            }
-        }
-
-
-        @Override protected Long doInBackground(Void... params) {
-            long beforeMemory = 0;
-            long endMemory = 0;
-            ActivityManager.MemoryInfo memoryInfo
-                    = new ActivityManager.MemoryInfo();
-            activityManager.getMemoryInfo(memoryInfo);
-            beforeMemory = memoryInfo.availMem;
-            List<ActivityManager.RunningAppProcessInfo> appProcessList
-                    = AndroidProcesses.getRunningAppProcessInfo(mContext);
-            ApplicationInfo appInfo = null;
-            for (ActivityManager.RunningAppProcessInfo info : appProcessList) {
-                String packName = info.processName;
-                try {
-                    packageManager.getApplicationInfo(info.processName, 0);
-                } catch (PackageManager.NameNotFoundException e) {
-                    appInfo = getApplicationInfo(
-                            info.processName.split(":")[0]);
-                    if (appInfo != null) {
-                        packName = info.processName.split(":")[0];
-                    }
-                }
-                List<Ignore> ignores = mFinalDb.findAllByWhere(Ignore.class,
-                        "packName='" + packName + "'");
-                if (ignores.size() == 0) {
-                    LogUtil.e(info.processName);
-                    killBackgroundProcesses(info.processName);
-                }
-            }
-            activityManager.getMemoryInfo(memoryInfo);
-            endMemory = memoryInfo.availMem;
-            return endMemory - beforeMemory;
-        }
-
-
-        @Override protected void onPostExecute(Long result) {
-
-            if (mOnActionListener != null) {
-                mOnActionListener.onCleanCompleted(CoreService.this, result);
-            }
-        }
-    }
+//    private class TaskClean extends AsyncTask<Void, Void, Long> {
+//
+//        private FinalDb mFinalDb = FinalDb.create(mContext);
+//
+//
+//        @Override protected void onPreExecute() {
+//            if (mOnActionListener != null) {
+//                mOnActionListener.onCleanStarted(CoreService.this);
+//            }
+//        }
+//
+//
+//        @Override protected Long doInBackground(Void... params) {
+//            long beforeMemory = 0;
+//            long endMemory = 0;
+//            ActivityManager.MemoryInfo memoryInfo
+//                    = new ActivityManager.MemoryInfo();
+//            activityManager.getMemoryInfo(memoryInfo);
+//            beforeMemory = memoryInfo.availMem;
+//            List<ActivityManager.RunningAppProcessInfo> appProcessList
+//                    = AndroidProcesses.getRunningAppProcessInfo(mContext);
+//            ApplicationInfo appInfo = null;
+//            for (ActivityManager.RunningAppProcessInfo info : appProcessList) {
+//                String packName = info.processName;
+//                try {
+//                    packageManager.getApplicationInfo(info.processName, 0);
+//                } catch (PackageManager.NameNotFoundException e) {
+//                    appInfo = getApplicationInfo(
+//                            info.processName.split(":")[0]);
+//                    if (appInfo != null) {
+//                        packName = info.processName.split(":")[0];
+//                    }
+//                }
+//                List<Ignore> ignores = mFinalDb.findAllByWhere(Ignore.class,
+//                        "packName='" + packName + "'");
+//                if (ignores.size() == 0) {
+//                    LogUtil.e(info.processName);
+//                    killBackgroundProcesses(info.processName);
+//                }
+//            }
+//            activityManager.getMemoryInfo(memoryInfo);
+//            endMemory = memoryInfo.availMem;
+//            return endMemory - beforeMemory;
+//        }
+//
+//
+//        @Override protected void onPostExecute(Long result) {
+//
+//            if (mOnActionListener != null) {
+//                mOnActionListener.onCleanCompleted(CoreService.this, result);
+//            }
+//        }
+//    }
 
 
     public long getAvailMemory(Context context) {
@@ -350,7 +350,7 @@ public class CoreService extends Service {
     public void cleanAllProcess() {
         //  mIsCleaning = true;
 
-        new TaskClean().execute();
+//        new TaskClean().execute();
     }
 
 

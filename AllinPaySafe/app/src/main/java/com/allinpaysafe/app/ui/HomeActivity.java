@@ -1,8 +1,12 @@
 package com.allinpaysafe.app.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.widget.PopupMenu;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.AbsoluteSizeSpan;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,8 +16,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.allinpaysafe.app.R;
+import com.allinpaysafe.app.mvp.impl.CircularLoaderView;
+import com.allinpaysafe.app.mvp.presenter.CircularLoaderPresenter;
 import com.allinpaysafe.app.ui.base.BaseActivity;
 import com.allinpaysafe.app.ui.setting.AbountActivity;
+import com.allinpaysafe.app.utils.DateUtil;
+import com.allinpaysafe.app.utils.LogUtil;
+import com.allinpaysafe.app.utils.TextFormater;
 import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
 
 import butterknife.BindView;
@@ -22,11 +31,12 @@ import butterknife.OnClick;
 /**
  * Created by houwen.lai on 2017/9/1.
  * 主页
- *
- *
+ * 内存
+ * 流量
  */
 
-public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener {
+public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemClickListener,
+        CircularLoaderView {
 
     @BindView(R.id.imgbtn_about)
     ImageButton imgbtn_about;
@@ -61,6 +71,8 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
     private int mBorderColor = Color.parseColor("#FFFFFF");
     private int mBorderWidth = 10;
 
+    CircularLoaderPresenter cirPresenter;
+
     @Override
     public int getLayoutId() {
         return R.layout.home_activity;
@@ -68,11 +80,19 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
 
     @Override
     public void initView() {
+
+        cirLoaders.setProgress(0);
+
+
+
+        cirPresenter =new CircularLoaderPresenter(this);
+        cirPresenter.attachView(this);
+        cirPresenter.setTimeTask();
 //        wave_view.setBorder(mBorderWidth, mBorderColor);
 //        wave_view.setShapeType(WaveView.ShapeType.CIRCLE);
 
 // Set Progress
-        cirLoaders.setProgress(80);
+
 // Set Wave and Border Color
 //        cirLoaders.setColor(Color.RED);
 // Set Border Width
@@ -159,4 +179,44 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
         }
         return false;
     }
+
+    @Override
+    public void initViews() {
+
+    }
+
+    @Override
+    public void updateViews(long sum, long available, float percent) {
+        LogUtil.d("sum="+sum+"\tavilable="+available+"\tprcent="+percent);
+        // Set Progress
+        cirLoaders.setProgress((int) (100 - percent));//水波文
+
+        SpannableStringBuilder spannableString = new SpannableStringBuilder(DateUtil.getInstance().getDouble(percent)+"");
+        spannableString.append("%");
+        AbsoluteSizeSpan absoluteSizeSpan = new AbsoluteSizeSpan(20);
+        //AbsoluteSizeSpan px    true dp
+        spannableString.setSpan(new AbsoluteSizeSpan(36,true), 0, spannableString.length()-1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(new AbsoluteSizeSpan(20,true), spannableString.length()-1,spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tv_ware_round.setText(spannableString);
+
+        tv_ware_merory.setText("" + TextFormater.dataSizeFormat(sum - available) + "/" +
+                TextFormater.dataSizeFormat(sum));//使用情况
+
+        //流量使用情况
+        tv_today_useing_d.setText("0MB");//今日消耗的流量
+        tv_month_useing_d.setText("0MB");//本月的总流量
+
+    }
+
+    @Override
+    public void onCleanStarted(Context context) {
+
+    }
+
+    @Override
+    public void onCleanCompleted(Context context, long memory) {
+
+    }
+
+
 }

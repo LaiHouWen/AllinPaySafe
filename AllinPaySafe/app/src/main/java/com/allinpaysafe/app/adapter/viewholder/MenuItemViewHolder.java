@@ -25,8 +25,8 @@ public class MenuItemViewHolder extends RecyclerView.ViewHolder {
     public MenuItemViewHolder(View parent) {
         super(parent);
         ButterKnife.bind(this, parent);
-        //mImageView = (ImageView) parent.findViewById(R.id.icon);
-        //mTextView = (TextView) parent.findViewById(R.id.content);
+        mImageView = (ImageView) parent.findViewById(R.id.icon);
+        mTextView = (TextView) parent.findViewById(R.id.content);
     }
 
 

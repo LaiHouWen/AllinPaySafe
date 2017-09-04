@@ -11,13 +11,16 @@ import android.os.IBinder;
 import android.os.Message;
 
 import com.allinpaysafe.app.R;
+import com.allinpaysafe.app.injector.ContextLifeCycle;
 import com.allinpaysafe.app.model.AppProcessInfo;
 import com.allinpaysafe.app.model.Menu;
 import com.allinpaysafe.app.mvp.impl.CircularLoaderView;
 import com.allinpaysafe.app.mvp.impl.Presenter;
 import com.allinpaysafe.app.mvp.impl.View;
 import com.allinpaysafe.app.service.CoreService;
+import com.allinpaysafe.app.ui.HomeActivity;
 import com.allinpaysafe.app.utils.AppUtils;
+import com.allinpaysafe.app.utils.LogUtil;
 import com.allinpaysafe.app.utils.TextFormater;
 import com.allinpaysafe.app.utils.ToastUtil;
 
@@ -42,42 +45,47 @@ public class CircularLoaderPresenter
 //    private MenuListAdapter recyclerAdapter;
     private Timer mTimer;
 
-    private CoreService mCoreService;
-
-    private ServiceConnection mServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mCoreService
-                    = ((CoreService.ProcessServiceBinder) service).getService();
-            mCoreService.setOnActionListener(CircularLoaderPresenter.this);
-            mCoreService.cleanAllProcess();
-            //  updateStorageUsage();
-
-        }
-
-
-        @Override public void onServiceDisconnected(ComponentName name) {
-            mCoreService.setOnActionListener(null);
-            mCoreService = null;
-        }
-    };
-
-
-    @Inject
-    public CircularLoaderPresenter(@ContextLifeCycle("Activity") Context context) {
-        this.mContext = context;
-        //this.mPreferenceUtils = preferenceUtils;
+    public CircularLoaderPresenter(Context mContext) {
+        this.mContext = mContext;
     }
+
+//    private CoreService mCoreService;
+
+//    private ServiceConnection mServiceConnection = new ServiceConnection() {
+//        @Override
+//        public void onServiceConnected(ComponentName name, IBinder service) {
+//            mCoreService
+//                    = ((CoreService.ProcessServiceBinder) service).getService();
+//            mCoreService.setOnActionListener(CircularLoaderPresenter.this);
+//            mCoreService.cleanAllProcess();
+//            //  updateStorageUsage();
+//
+//        }
+//
+//
+//        @Override public void onServiceDisconnected(ComponentName name) {
+//            mCoreService.setOnActionListener(null);
+//            mCoreService = null;
+//        }
+//    };
+
+
+//    @Inject
+//    public CircularLoaderPresenter(@ContextLifeCycle("Activity") Context context) {
+//        this.mContext = context;
+//        //this.mPreferenceUtils = preferenceUtils;
+//    }
 
     @Override
     public void attachView(View v) {
-        this.mCircularLoaderView = (CircularLoader) v;
+        this.mCircularLoaderView = (HomeActivity) v;
+
     }
 
-
-    @Override public void onCreate(Bundle savedInstanceState) {
-        initViews();
-        setTimeTask();
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+//        initViews();
+//        setTimeTask();
     }
 
 
@@ -140,12 +148,13 @@ public class CircularLoaderPresenter
         }
     }
 
-
+    /**
+     * 清理内存
+     */
     public void cleanMemory() {
-        mContext.bindService(new Intent(mContext, CoreService.class),
-                mServiceConnection, Context.BIND_AUTO_CREATE);
+//        mContext.bindService(new Intent(mContext, CoreService.class),
+//                mServiceConnection, Context.BIND_AUTO_CREATE);
     }
-
 
     private Handler mHandler = new Handler() {
         @SuppressLint("HandlerLeak") public void handleMessage(Message msg) {
@@ -161,13 +170,16 @@ public class CircularLoaderPresenter
         }
     };
 
-
+    /**
+     * 定时器 读取内存的使用情况
+     */
     public void setTimeTask() {
         mTimer = new Timer();
         mTimer.schedule(new TimerTask() {
             @Override public void run() {
                 Message msg = Message.obtain();
                 try {
+                    LogUtil.d("time task=");
                     sum = AppUtils.getTotalMemory();
                     available = AppUtils.getAvailMemory(mContext);
                     percent = AppUtils.getPercent(mContext);
@@ -189,7 +201,7 @@ public class CircularLoaderPresenter
 
 
     @Override public void onStart() {
-
+        setTimeTask();
     }
 
 
@@ -233,6 +245,6 @@ public class CircularLoaderPresenter
     @Override public void onCleanCompleted(Context context, long cacheSize) {
         ToastUtil.ToastShort(context, "已清理内存" + TextFormater.dataSizeFormat(cacheSize));
         mCircularLoaderView.onCleanCompleted(context, cacheSize);
-        mContext.unbindService(mServiceConnection);
+//        mContext.unbindService(mServiceConnection);
     }
 }

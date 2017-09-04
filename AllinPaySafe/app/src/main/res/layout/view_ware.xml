@@ -70,9 +70,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/tv_ware_round"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="18dp"
             android:textColor="@color/black_3393"
             android:textSize="15sp"
-            android:text="2.3GB/2.9GB"/>
+            android:text="0GB/0GB"/>
     </RelativeLayout>
 </FrameLayout>

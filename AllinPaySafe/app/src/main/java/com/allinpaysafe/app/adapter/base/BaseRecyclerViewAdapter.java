@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
+
+import com.allinpaysafe.app.utils.ViewHelper;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
