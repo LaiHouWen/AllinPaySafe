@@ -44,12 +44,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 //        mModel = TUtil.getT(this, 1);
 
 
-        this.initView();
+        this.initView(savedInstanceState);
         this.initPresenter();
     }
     public abstract int getLayoutId();
 
-    public abstract void initView();
+    public abstract void initView(Bundle savedInstanceState);
     /**
      * 简单页面无需mvp就不用管此方法即可,完美兼容各种实际场景的变通
      * mPresenter.setVM(this, mModel);

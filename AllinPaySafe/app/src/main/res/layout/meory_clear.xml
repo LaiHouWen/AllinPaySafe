@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/view_meory_text"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="6dp">
+
+        <include layout="@layout/fixed_recycler_view"/>
+
+        <ListView
+            android:id="@+id/listview_meory"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cacheColorHint ="#00000000"
+            android:visibility="gone"
+            android:layout_above="@+id/linear_bottom_meory"/>
+
+        <LinearLayout
+            android:id="@+id/linear_bottom_meory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:background="@mipmap/icon_nav_bottom">
+
+            <Button
+                android:id="@+id/btn_lear_meory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:background="@mipmap/btn_clear"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:text="一键清理"
+                />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

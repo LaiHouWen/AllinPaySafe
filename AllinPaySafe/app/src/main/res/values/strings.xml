@@ -10,4 +10,9 @@
 
     <string name="cleaned">清理垃圾 (<xliff:g id="memory">%1$s</xliff:g>)</string>
 
+    <string name="text_meory_avaliable">可清理内存</string>
+
+    <string name="text_app_run">正在运行的程序</string>
+
+
 </resources>

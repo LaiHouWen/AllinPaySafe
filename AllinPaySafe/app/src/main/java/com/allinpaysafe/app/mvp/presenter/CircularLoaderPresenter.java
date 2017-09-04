@@ -49,25 +49,25 @@ public class CircularLoaderPresenter
         this.mContext = mContext;
     }
 
-//    private CoreService mCoreService;
+    private CoreService mCoreService;
 
-//    private ServiceConnection mServiceConnection = new ServiceConnection() {
-//        @Override
-//        public void onServiceConnected(ComponentName name, IBinder service) {
-//            mCoreService
-//                    = ((CoreService.ProcessServiceBinder) service).getService();
-//            mCoreService.setOnActionListener(CircularLoaderPresenter.this);
-//            mCoreService.cleanAllProcess();
-//            //  updateStorageUsage();
-//
-//        }
-//
-//
-//        @Override public void onServiceDisconnected(ComponentName name) {
-//            mCoreService.setOnActionListener(null);
-//            mCoreService = null;
-//        }
-//    };
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mCoreService
+                    = ((CoreService.ProcessServiceBinder) service).getService();
+            mCoreService.setOnActionListener(CircularLoaderPresenter.this);
+            mCoreService.cleanAllProcess();
+            //  updateStorageUsage();
+
+        }
+
+
+        @Override public void onServiceDisconnected(ComponentName name) {
+            mCoreService.setOnActionListener(null);
+            mCoreService = null;
+        }
+    };
 
 
 //    @Inject
@@ -152,8 +152,8 @@ public class CircularLoaderPresenter
      * 清理内存
      */
     public void cleanMemory() {
-//        mContext.bindService(new Intent(mContext, CoreService.class),
-//                mServiceConnection, Context.BIND_AUTO_CREATE);
+        mContext.bindService(new Intent(mContext, CoreService.class),
+                mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     private Handler mHandler = new Handler() {

@@ -3,6 +3,7 @@ package com.allinpaysafe.app.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -79,7 +80,7 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
     }
 
     @Override
-    public void initView() {
+    public void initView(Bundle savedInstanceState) {
 
         cirLoaders.setProgress(0);
 
@@ -106,7 +107,13 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
 
     }
 
-//    @Override
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cirPresenter.onDestroy();
+    }
+
+    //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        // Inflate the menu; this adds items to the action bar if it is present.
 //        getMenuInflater().inflate(R.menu.menu_base, menu);//关于
@@ -133,7 +140,7 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
             case R.id.imgbtn_about://关于
                 shoePopMenu();
             case R.id.btn_learn_merory://清理内存 暂停
-
+                startActivity(new Intent(this,MeoryClearActivity.class));
                 break;
             case R.id.btn_learn_merory_stop://停止
 

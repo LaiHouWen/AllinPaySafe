@@ -8,14 +8,14 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:background="@color/white"
+        android:layout_height="48dp"
+        android:background="@color/transparent"
         android:fitsSystemWindows="true"
         android:minHeight="42dp"
         android:paddingLeft="-5dp"
         android:theme="@style/AppTheme.AppBarOverlay"
         android:visibility="visible"
-        app:navigationIcon="@mipmap/common_back_btn_normal"
+        app:navigationIcon="@mipmap/icon_jiantou"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:titleTextColor="@color/white">
 
@@ -37,14 +37,14 @@
             android:text="" />
 
         <!--<ImageButton-->
-            <!--android:id="@+id/toolbar_share"-->
-            <!--android:layout_width="44dp"-->
-            <!--android:layout_height="44dp"-->
-            <!--android:layout_gravity="right|center"-->
-            <!--android:layout_marginRight="5dp"-->
-            <!--android:background="@color/transparent"-->
-            <!--android:src="@mipmap/ico_doubt"-->
-            <!--android:visibility="gone" />-->
+        <!--android:id="@+id/toolbar_share"-->
+        <!--android:layout_width="44dp"-->
+        <!--android:layout_height="44dp"-->
+        <!--android:layout_gravity="right|center"-->
+        <!--android:layout_marginRight="5dp"-->
+        <!--android:background="@color/transparent"-->
+        <!--android:src="@mipmap/ico_doubt"-->
+        <!--android:visibility="gone" />-->
         <ImageView
             android:id="@+id/toolbar_code"
             android:layout_width="44dp"
@@ -68,25 +68,25 @@
             android:visibility="gone" />
 
         <!--<TextView-->
-            <!--android:id="@+id/toolbar_choice"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="44dp"-->
-            <!--android:layout_gravity="right|center_horizontal"-->
-            <!--android:layout_marginRight="5dp"-->
-            <!--android:drawablePadding="8dp"-->
-            <!--android:gravity="center"-->
-            <!--android:paddingLeft="@dimen/dimen_5dp"-->
-            <!--android:paddingRight="@dimen/dimen_10dp"-->
-            <!--android:text="持有"-->
-            <!--android:textColor="@color/blue_044675"-->
-            <!--android:textSize="@dimen/dimen_16sp"-->
-            <!--android:visibility="gone" />-->
+        <!--android:id="@+id/toolbar_choice"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="44dp"-->
+        <!--android:layout_gravity="right|center_horizontal"-->
+        <!--android:layout_marginRight="5dp"-->
+        <!--android:drawablePadding="8dp"-->
+        <!--android:gravity="center"-->
+        <!--android:paddingLeft="@dimen/dimen_5dp"-->
+        <!--android:paddingRight="@dimen/dimen_10dp"-->
+        <!--android:text="持有"-->
+        <!--android:textColor="@color/blue_044675"-->
+        <!--android:textSize="@dimen/dimen_16sp"-->
+        <!--android:visibility="gone" />-->
         <!--android:drawableRight="@mipmap/screening_down"-->
     </android.support.v7.widget.Toolbar>
 
     <View
         android:id="@+id/view_titlebar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_1px"
+        android:layout_height="0dp"
         android:background="@color/line"/>
 </LinearLayout>
