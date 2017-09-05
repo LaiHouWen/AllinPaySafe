@@ -7,6 +7,7 @@ import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -59,8 +60,10 @@ public class ProcessItemViewHolder extends RecyclerView.ViewHolder {
         mCheckBox.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
-
     public void setMemoryVisible(boolean visible) {
         mTextView2.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+    }
+    public void setCheckBoxChangeListern(CompoundButton.OnCheckedChangeListener listener) {
+        mCheckBox.setOnCheckedChangeListener(listener);
     }
 }

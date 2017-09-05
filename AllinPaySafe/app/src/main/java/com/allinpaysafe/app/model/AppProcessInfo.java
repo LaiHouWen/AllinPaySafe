@@ -61,6 +61,8 @@ public class AppProcessInfo implements Comparable<AppProcessInfo> {
      */
     public boolean isSystem;
 
+    public boolean isFilterProcess;//是否过滤
+
 
     /**
      * Instantiates a new ab process info.
@@ -84,6 +86,108 @@ public class AppProcessInfo implements Comparable<AppProcessInfo> {
         this.uid = uid;
     }
 
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    public String getProcessName() {
+        return processName;
+    }
+
+    public void setProcessName(String processName) {
+        this.processName = processName;
+    }
+
+    public int getPid() {
+        return pid;
+    }
+
+    public void setPid(int pid) {
+        this.pid = pid;
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
+
+    public Drawable getIcon() {
+        return icon;
+    }
+
+    public void setIcon(Drawable icon) {
+        this.icon = icon;
+    }
+
+    public long getMemory() {
+        return memory;
+    }
+
+    public void setMemory(long memory) {
+        this.memory = memory;
+    }
+
+    public void setIsFilterProcess(boolean isFilterProcess) {
+        this.isFilterProcess = isFilterProcess;
+    }
+    public boolean getIsFilterProcess() {
+       return this.isFilterProcess;
+    }
+
+    public String getCpu() {
+        return cpu;
+    }
+
+    public void setCpu(String cpu) {
+        this.cpu = cpu;
+    }
+
+    public String getPackName() {
+        return packName;
+    }
+
+    public void setPackName(String packName) {
+        this.packName = packName;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getThreadsCount() {
+        return threadsCount;
+    }
+
+    public void setThreadsCount(String threadsCount) {
+        this.threadsCount = threadsCount;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
+    public boolean isSystem() {
+        return isSystem;
+    }
+
+    public void setSystem(boolean system) {
+        isSystem = system;
+    }
 
     @Override public int compareTo(AppProcessInfo another) {
         if (this.processName.compareTo(another.processName) == 0) {

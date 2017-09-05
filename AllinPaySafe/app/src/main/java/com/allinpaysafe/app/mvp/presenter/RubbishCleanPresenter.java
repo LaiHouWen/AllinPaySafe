@@ -22,6 +22,8 @@ import com.allinpaysafe.app.mvp.impl.RubbishCleanView;
 import com.allinpaysafe.app.mvp.impl.View;
 import com.allinpaysafe.app.service.CleanerService;
 import com.allinpaysafe.app.ui.MeoryClearActivity;
+import com.allinpaysafe.app.ui.base.BaseActivity;
+import com.allinpaysafe.app.ui.base.RubbishActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -171,7 +173,7 @@ public class RubbishCleanPresenter implements Presenter,
 
     @Override
     public void attachView(View v) {
-        mRubbishClean = (MeoryClearActivity) v;
+        mRubbishClean = (RubbishActivity) v;
     }
 
     @Override
@@ -180,6 +182,12 @@ public class RubbishCleanPresenter implements Presenter,
         mRubbishClean.startRefresh();
         mRubbishClean.enableSwipeRefreshLayout(false);
     }
+
+//    @Override
+//    public void onScanProgressUpdated(Context context, int current, int max, long cacheSize, String packageName,CacheListItem item) {
+//        mRubbishClean.onScanProgressUpdated(context, current, max, cacheSize,
+//                packageName,item);
+//    }
 
     @Override
     public void onScanProgressUpdated(Context context, int current, int max, long cacheSize, String packageName) {
@@ -206,7 +214,9 @@ public class RubbishCleanPresenter implements Presenter,
     public void onCleanCompleted(Context context, long cacheSize) {
         mRubbishClean.showSnackbar(context.getString(R.string.cleaned,
                 Formatter.formatShortFileSize(mContext, cacheSize)));
+        if (mCacheListItems!=null)
         mCacheListItems.clear();
+        if (recyclerAdapter!=null)
         recyclerAdapter.notifyDataSetChanged();
     }
 
@@ -216,6 +226,7 @@ public class RubbishCleanPresenter implements Presenter,
                 mCleanerService.getCacheSize() > 0) {
 
             mCleanerService.cleanCache();
+
         }
     }
 

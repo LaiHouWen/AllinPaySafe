@@ -140,7 +140,9 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
             case R.id.imgbtn_about://关于
                 shoePopMenu();
             case R.id.btn_learn_merory://清理内存 暂停
-                startActivity(new Intent(this,MeoryClearActivity.class));
+//                startActivity(new Intent(this,MeoryClearActivity.class));
+                startActivity(new Intent(this,MeoryClearAllActivity.class));
+
                 break;
             case R.id.btn_learn_merory_stop://停止
 

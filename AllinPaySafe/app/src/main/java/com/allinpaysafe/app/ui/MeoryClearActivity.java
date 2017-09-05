@@ -16,14 +16,18 @@ import android.widget.TextView;
 
 import com.allinpaysafe.app.R;
 import com.allinpaysafe.app.adapter.CacheListAdapter;
+import com.allinpaysafe.app.model.CacheListItem;
 import com.allinpaysafe.app.mvp.impl.CircularLoaderView;
 import com.allinpaysafe.app.mvp.impl.RubbishCleanView;
 import com.allinpaysafe.app.mvp.presenter.RubbishCleanPresenter;
 import com.allinpaysafe.app.ui.base.BaseActivity;
+import com.allinpaysafe.app.ui.base.RubbishActivity;
 import com.allinpaysafe.app.utils.AppUtils;
 import com.allinpaysafe.app.utils.BtnUtils;
 import com.allinpaysafe.app.utils.LogUtil;
 import com.allinpaysafe.app.utils.TextFormater;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -34,10 +38,10 @@ import butterknife.OnClick;
  * Created by houwen.lai on 2017/9/4.
  *
  * 内存列表
- *
+ *BaseActivity implements RubbishCleanView
  */
 
-public class MeoryClearActivity extends BaseActivity implements RubbishCleanView {
+public class MeoryClearActivity extends RubbishActivity{
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -88,11 +92,7 @@ public class MeoryClearActivity extends BaseActivity implements RubbishCleanView
         checbox_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked){
-
-                }else{
-
-                }
+                setDateNotify(isChecked);
             }
         });
 
@@ -170,6 +170,19 @@ public class MeoryClearActivity extends BaseActivity implements RubbishCleanView
 //        mProgressBar.setProgress((int) percent);
     }
 
+//    @Override
+//    public void onScanProgressUpdated(Context context, int current, int max, long cacheSize, String packageName, CacheListItem item) {
+//        LogUtil.d("onScan=current="+current+"\tmax="+max+"\tcacheSize="+cacheSize+"\tpackageName="+packageName);
+//
+//        tv_ariable_meory.setText(TextFormater.dataSizeFormatArray(cacheSize)[0]);
+//        tv_ariable_meory_t.setText(TextFormater.dataSizeFormatArray(cacheSize)[1]);
+//
+//        if (recyclerAdapter==null)return;
+//        recyclerAdapter.add(item);
+//        recyclerAdapter.notifyDataSetChanged();
+//        recyclerView.smoothScrollToPosition(recyclerAdapter.getList().size()-1);
+//    }
+
     @Override
     public void onScanCompleted() {
 
@@ -200,13 +213,18 @@ public class MeoryClearActivity extends BaseActivity implements RubbishCleanView
 
     }
 
-
+    /**
+     * 是否全选
+     * @param flag
+     */
     private void setDateNotify(boolean flag){
         if (recyclerView==null)return;
         if (recyclerAdapter==null)return;
-
-
-        recyclerView.getAdapter().notifyDataSetChanged();
+        if(recyclerAdapter.getList()==null||recyclerAdapter.getList().size()==0)return;
+        for (int i=0;i<recyclerAdapter.getList().size();i++){
+            recyclerAdapter.getList().get(i).setIsChoise(flag);
+        }
+        recyclerAdapter.notifyDataSetChanged();
     }
 
 }

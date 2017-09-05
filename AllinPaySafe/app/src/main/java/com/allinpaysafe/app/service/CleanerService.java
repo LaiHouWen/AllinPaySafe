@@ -1,5 +1,7 @@
 package com.allinpaysafe.app.service;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +22,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.allinpaysafe.app.R;
+import com.allinpaysafe.app.model.AppProcessInfo;
 import com.allinpaysafe.app.model.CacheListItem;
+import com.allinpaysafe.app.utils.LogUtil;
+import com.jaredrummler.android.processes.AndroidProcesses;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -45,10 +50,17 @@ public class CleanerService extends Service {
     private boolean mIsCleaning = false;
     private long mCacheSize = 0;
 
+    ActivityManager activityManager = null;
+    List<AppProcessInfo> list = null;
+    PackageManager packageManager = null;
+    Context mContext;
+
     public static interface OnActionListener {
         public void onScanStarted(Context context);
 
         public void onScanProgressUpdated(Context context, int current, int max, long cacheSize, String packageName);
+
+//        public void onScanProgressUpdated(Context context, int current, int max, long cacheSize, String packageName, CacheListItem item);
 
         public void onScanCompleted(Context context, List<CacheListItem> apps);
 
@@ -66,11 +78,13 @@ public class CleanerService extends Service {
 
     private CleanerServiceBinder mBinder = new CleanerServiceBinder();
 
+    /**
+     * 扫描
+     */
     private class TaskScan
             extends AsyncTask<Void, Object, List<CacheListItem>> {
 
         private int mAppCount = 0;
-
 
         @Override
         protected void onPreExecute() {
@@ -111,6 +125,7 @@ public class CleanerService extends Service {
 
                                         if (succeeded && pStats.cacheSize > 0) {
                                             try {
+
                                                 apps.add(new CacheListItem(
                                                         pStats.packageName,
                                                         getPackageManager().getApplicationLabel(
@@ -124,10 +139,18 @@ public class CleanerService extends Service {
                                                         pStats.cacheSize));
 
                                                 mCacheSize += pStats.cacheSize;
+                                                //
+//                                                publishProgress(++mAppCount,
+//                                                        packages.size(),
+//                                                        mCacheSize,
+//                                                        pStats.packageName);
+                                                //
                                                 publishProgress(++mAppCount,
                                                         packages.size(),
                                                         mCacheSize,
-                                                        pStats.packageName);
+                                                        pStats.packageName,
+                                                        apps.get(apps.size()-1));
+
                                             } catch (PackageManager.NameNotFoundException e) {
                                                 e.printStackTrace();
                                             }
@@ -170,6 +193,9 @@ public class CleanerService extends Service {
         }
     }
 
+    /**
+     * 清除缓存
+     */
     private class TaskClean extends AsyncTask<Void, Void, Long> {
 
         @Override
@@ -183,7 +209,7 @@ public class CleanerService extends Service {
         @Override
         protected Long doInBackground(Void... params) {
             final CountDownLatch countDownLatch = new CountDownLatch(1);
-
+            LogUtil.d("service-cleanr");
             StatFs stat = new StatFs(
                     Environment.getDataDirectory().getAbsolutePath());
 
@@ -229,6 +255,15 @@ public class CleanerService extends Service {
 
     @Override
     public void onCreate() {
+        mContext = getApplicationContext();
+
+        try {
+            activityManager = (ActivityManager) getSystemService(
+                    Context.ACTIVITY_SERVICE);
+            packageManager = mContext.getPackageManager();
+        } catch (Exception e) {
+
+        }
         try {
             mGetPackageSizeInfoMethod = getPackageManager().getClass()
                                                            .getMethod(
@@ -264,11 +299,15 @@ public class CleanerService extends Service {
 
                     }
 
-
                     @Override
                     public void onScanProgressUpdated(Context context, int current, int max, long cacheSize, String packageName) {
 
                     }
+
+//                    @Override
+//                    public void onScanProgressUpdated(Context context, int current, int max, long cacheSize, String packageName, CacheListItem item) {
+//
+//                    }
 
 
                     @Override
@@ -323,7 +362,8 @@ public class CleanerService extends Service {
     public void cleanCache() {
         mIsCleaning = true;
 
-        new TaskClean().execute();
+//        new TaskClean().execute();
+        cleanAllProcess();
     }
 
 
@@ -363,5 +403,226 @@ public class CleanerService extends Service {
 
     public long getCacheSize() {
         return mCacheSize;
+    }
+
+    public void cleanAllProcess() {
+        mIsCleaning = true;
+        new TaskCleanProcess().execute();
+    }
+
+    /**
+     * 杀死进程
+     */
+    private class TaskCleanProcess extends AsyncTask<Void, Void, Long> {
+
+//        private FinalDb mFinalDb = FinalDb.create(mContext);
+
+
+        @Override protected void onPreExecute() {
+            if (mOnActionListener != null) {
+                mOnActionListener.onCleanStarted(CleanerService.this);
+            }
+        }
+
+
+        @Override protected Long doInBackground(Void... params) {
+
+            killAll();
+
+            long beforeMemory = 0;
+            long endMemory = 0;
+//            ActivityManager.MemoryInfo memoryInfo
+//                    = new ActivityManager.MemoryInfo();
+//            activityManager.getMemoryInfo(memoryInfo);
+//            beforeMemory = memoryInfo.availMem;
+//            List<RunningAppProcessInfo> appProcessList
+//                    = AndroidProcesses.getRunningAppProcessInfo(mContext);
+//            ApplicationInfo appInfo = null;
+//            for (RunningAppProcessInfo info : appProcessList) {
+//                String packName = info.processName;
+//                if( info.processName.contains("com.android.system")
+//                        ||info.pid==android.os.Process.myPid())//跳过系统 及当前进程
+//                    continue;
+//                try {
+//                    packageManager.getApplicationInfo(info.processName, 0);
+//                } catch (PackageManager.NameNotFoundException e) {
+//                    appInfo = getApplicationInfo(info.processName.split(":")[0]);
+//                    if (appInfo != null) {
+//                        packName = info.processName.split(":")[0];
+//                    }
+//                }
+//                //忽略进程
+////                List<Ignore> ignores = mFinalDb.findAllByWhere(Ignore.class,
+////                        "packName='" + packName + "'");
+////                if (ignores.size() == 0) {
+//                    LogUtil.e(info.processName);
+//                    killBackgroundProcesses(info.processName);
+////                }
+//            }
+//            activityManager.getMemoryInfo(memoryInfo);
+//            endMemory = memoryInfo.availMem;
+            return endMemory - beforeMemory;
+        }
+
+
+        @Override protected void onPostExecute(Long result) {
+
+            if (mOnActionListener != null) {
+                mOnActionListener.onCleanCompleted(CleanerService.this, result);
+            }
+        }
+    }
+
+    public void killBackgroundProcesses(String processName) {
+        mIsScanning = true;
+
+        String packageName = null;
+        try {
+            if (processName.indexOf(":") == -1) {
+                packageName = processName;
+            }
+            else {
+                packageName = processName.split(":")[0];
+            }
+
+            activityManager.killBackgroundProcesses(packageName);
+
+            //app使用FORCE_STOP_PACKAGES权限，app必须和这个权限的声明者的签名保持一致！
+            Method forceStopPackage = activityManager.getClass()
+                    .getDeclaredMethod(
+                            "forceStopPackage",
+                            String.class);
+            forceStopPackage.setAccessible(true);
+            forceStopPackage.invoke(activityManager, packageName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public ApplicationInfo getApplicationInfo(String processName) {
+        if (processName == null) {
+            return null;
+        }
+        List<ApplicationInfo> appList = packageManager.getInstalledApplications(
+                PackageManager.GET_UNINSTALLED_PACKAGES);
+        for (ApplicationInfo appInfo : appList) {
+            if (processName.equals(appInfo.processName)) {
+                return appInfo;
+            }
+        }
+        return null;
+    }
+int MAX_TASKS =1000;
+    /*
+    * 杀死后台进程
+    */
+    public void killAll(){
+
+        //获取一个ActivityManager 对象
+        ActivityManager activityManager = (ActivityManager)
+                getSystemService(Context.ACTIVITY_SERVICE);
+        //获取系统中所有正在运行的进程
+        List<RunningAppProcessInfo> appProcessInfos = activityManager
+                .getRunningAppProcesses();
+        int count=0;//被杀进程计数
+        String nameList="";//记录被杀死进程的包名
+        long beforeMem = getAvailMemory(mContext);//清理前的可用内存
+        Log.i(TAG, "清理前可用内存为 : " + beforeMem);
+
+        for (RunningAppProcessInfo appProcessInfo:appProcessInfos) {
+            nameList="";
+            if( appProcessInfo.processName.contains("com.android.system")
+                    ||appProcessInfo.pid==android.os.Process.myPid())//跳过系统 及当前进程
+                continue;
+            String[] pkNameList=appProcessInfo.pkgList;//进程下的所有包名
+            for(int i=0;i<pkNameList.length;i++){
+                String pkName=pkNameList[i];
+                activityManager.killBackgroundProcesses(pkName);//杀死该进程
+                count++;//杀死进程的计数+1
+                nameList+="  "+pkName;
+            }
+            Log.i(TAG, nameList+"---------------------");
+        }
+
+        long afterMem = getAvailMemory(mContext);//清理后的内存占用
+
+//        Toast.makeText(mContext, "杀死 " + (count+1) + " 个进程, 释放"
+//                + formatFileSize(afterMem - beforeMem) + "内存", Toast.LENGTH_LONG).show();
+        Log.i(TAG, "清理后可用内存为 : " + afterMem);
+        Log.i(TAG, "清理进程数量为 : " + count+1);
+        LogUtil.e( "杀死 " + (count+1) + " 个进程, 释放"
+                + formatFileSize(afterMem - beforeMem) + "内存");
+
+//        final ActivityManager am = (ActivityManager)
+//                mContext.getSystemService(Context.ACTIVITY_SERVICE);
+//        final List<ActivityManager.RecentTaskInfo> recentTasks =
+//                am.getRecentTasks(MAX_TASKS, ActivityManager.RECENT_IGNORE_UNAVAILABLE);
+//        for(ActivityManager.RecentTaskInfo rt:recentTasks ) {
+//            if (am != null) am.removeTask(rt.persistentId);
+//            am.re;
+//        }
+
+    }
+
+    public static void delAllRecentTask(Context context){
+        Log.i("zhangliang=>1","delAllRecentTask");
+        final ActivityManager am =(ActivityManager)
+                context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.TaskDescription> mRecentTaskDescriptions = null;
+        if(mRecentTaskDescriptions==null){
+
+            mRecentTaskDescriptions = new  ArrayList<ActivityManager.TaskDescription>();
+            mRecentTaskDescriptions=getTaskInRecentList(context);
+        }
+
+
+        for(ActivityManager.TaskDescription recent :mRecentTaskDescriptions){
+
+            if(!recent.packageName.toString().equals("com.snowfish.aios.launcher")&&!recent.packageName.toString().equals("com.jeejen.family")){
+                am.removeTask(recent.persistentTaskId,ActivityManager.REMOVE_TASK_KILL_PROCESS);
+            }
+        }
+        if(mRecentTaskDescriptions!=null){
+            mRecentTaskDescriptions.clear();
+
+            if(RecentTasksLoader.getInstance(context).getLoadedTasks()!= null){
+                RecentTasksLoader.getInstance(context).getLoadedTasks().clear();
+            }
+        }
+        // dismissActivityGoBack(context);
+    }
+
+    public voiddeleteAllRecent(){
+        final ActivityManager am = (ActivityManager)
+                mContext.getSystemService(Context.ACTIVITY_SERVICE);
+        if (am != null) {
+            for(TaskDescription recent :mRecentTaskDescriptions){
+                am.removeTask(recent.persistentTaskId,ActivityManager.REMOVE_TASK_KILL_PROCESS);
+            }
+        }
+        if(mRecentTaskDescriptions!=null){
+            mRecentTaskDescriptions.clear();
+            if (mRecentTasksLoader.getLoadedTasks() !=null){
+                mRecentTasksLoader.getLoadedTasks().clear();
+            }
+            dismissAndGoBack();
+        }
+    }
+
+    /*
+     * *获取可用内存大小
+     */
+    private long getAvailMemory(Context context) {
+        // 获取android当前可用内存大小
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+        am.getMemoryInfo(mi);
+        return mi.availMem;
+    }
+
+    /*
+     * *字符串转换 long-string KB/MB
+     */
+    private String formatFileSize(long number){
+        return Formatter.formatFileSize(mContext, number);
     }
 }

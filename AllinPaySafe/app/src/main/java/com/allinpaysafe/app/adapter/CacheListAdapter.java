@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 
 import com.allinpaysafe.app.R;
 import com.allinpaysafe.app.adapter.base.BaseRecyclerViewAdapter;
@@ -18,7 +19,7 @@ import java.util.List;
 
 /**
  * Created by  on 2016/5/16.
- *
+ * 内存适配器
  */
 public class CacheListAdapter extends BaseRecyclerViewAdapter<CacheListItem> {
     private Context mContext;
@@ -56,8 +57,14 @@ public class CacheListAdapter extends BaseRecyclerViewAdapter<CacheListItem> {
                 TextFormater.dataSizeFormat(cacheListItem.getCacheSize()));
         holder.setCheckBoxVisible(true);
         animate(viewHolder, position);
-    }
 
+        holder.setCheckBoxChangeListern(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                list.get(position).setIsChoise(isChecked);
+            }
+        });
+    }
 
     @Override
     protected Animator[] getAnimators(View view) {

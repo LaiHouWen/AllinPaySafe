@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gi_f_1">
+
+    <ImageView
+        android:id="@+id/appImg_clear_meory"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="@drawable/gi_f_1"
+        android:src="@drawable/gi_f_1"/>
+
+
+    <!--<com.allinpaysafe.app.utils.GifView-->
+        <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+        <!--android:id="@+id/gif_view"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:visibility="visible"-->
+        <!--app:gif="@drawable/gi_f_1"-->
+        <!--app:scaleType="fitCenter" />-->
+
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/gifImageview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/gi_f_1"
+        />
+    <ImageView
+        android:id="@+id/img_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@mipmap/icon_m"
+        android:visibility="gone"
+        android:layout_below="@+id/appImg_clear_meory"
+        android:layout_toRightOf="@+id/appImg_clear_meory"
+        android:layout_toEndOf="@+id/appImg_clear_meory" />
+
+    <include layout="@layout/view_title" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="48dp"
+        android:paddingBottom="10dp">
+
+        <TextView
+            android:id="@+id/tv_ariable_meory_c"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:text="0"
+            android:textColor="@color/white"
+            android:textSize="48sp" />
+
+        <TextView
+            android:id="@+id/tv_ariable_c"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="36dp"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/tv_ariable_meory_c"
+            android:text="MB"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tv_clear_over"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/tv_ariable_meory_c"
+            android:text="@string/text_meory_release"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+        <Button
+            android:id="@+id/btn_look_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="46dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/tv_ariable_meory_c"
+            android:text="@string/text_look_detail"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:background="@drawable/shap_blue"
+            />
+    <Button
+        android:id="@+id/btn_one_cler"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:text="@string/text_clear_memery"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:background="@drawable/shap_round_white"
+        />
+    </RelativeLayout>
+</RelativeLayout>

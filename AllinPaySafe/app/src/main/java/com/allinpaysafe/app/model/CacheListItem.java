@@ -11,7 +11,7 @@ public class CacheListItem {
     private long mCacheSize;
     private String mPackageName, mApplicationName;
     private Drawable mIcon;
-
+    private boolean isChoise=false;
 
     public CacheListItem(String packageName, String applicationName, Drawable icon, long cacheSize) {
         mCacheSize = cacheSize;
@@ -40,4 +40,11 @@ public class CacheListItem {
         return mPackageName;
     }
 
+    public void setIsChoise(boolean isChoise) {
+        this.isChoise = isChoise;
+    }
+
+    public boolean getIsChoise() {
+        return isChoise;
+    }
 }

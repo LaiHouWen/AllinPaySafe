@@ -4,6 +4,9 @@ import android.content.Context;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
 import com.allinpaysafe.app.adapter.CacheListAdapter;
+import com.allinpaysafe.app.model.CacheListItem;
+
+import java.util.List;
 
 /**
  * Created by Administrator on 2017/9/4.
@@ -20,6 +23,7 @@ public interface RubbishCleanView extends View {
 
     void onScanProgressUpdated(Context context, int current, int max, long cacheSize, String packageName);
 
+//    void onScanProgressUpdated(Context context, int current, int max, long cacheSize, String packageName,CacheListItem result);
     void onScanCompleted();
 
     void stopRefresh();

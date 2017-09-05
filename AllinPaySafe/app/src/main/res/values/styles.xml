@@ -60,4 +60,21 @@
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/white</item>
     </style>
+
+    <declare-styleable name="GifView">
+        <attr name="gif" format="reference" />
+        <attr name="played" format="boolean" />
+        <attr name="paused" format="boolean" />
+        <attr name="scaleType">
+            <enum name="matrix" value="0" />
+            <enum name="fitXY" value="1" />
+            <enum name="fitStart" value="2" />
+            <enum name="fitCenter" value="3" />
+            <enum name="fitEnd" value="4" />
+            <enum name="center" value="5" />
+            <enum name="centerCrop" value="6" />
+            <enum name="centerInside" value="7" />
+        </attr>
+    </declare-styleable>
+
 </resources>

@@ -259,7 +259,7 @@ public class CoreService extends Service {
 
 
     public void killBackgroundProcesses(String processName) {
-        // mIsScanning = true;
+         mIsScanning = true;
 
         String packageName = null;
         try {
@@ -318,11 +318,12 @@ public class CoreService extends Service {
                         packName = info.processName.split(":")[0];
                     }
                 }
+                //忽略进程
 //                List<Ignore> ignores = mFinalDb.findAllByWhere(Ignore.class,
 //                        "packName='" + packName + "'");
 //                if (ignores.size() == 0) {
-//                    LogUtil.e(info.processName);
-//                    killBackgroundProcesses(info.processName);
+                    LogUtil.e(info.processName);
+                    killBackgroundProcesses(info.processName);
 //                }
             }
             activityManager.getMemoryInfo(memoryInfo);
@@ -352,9 +353,9 @@ public class CoreService extends Service {
 
 
     public void cleanAllProcess() {
-        //  mIsCleaning = true;
+          mIsCleaning = true;
 
-//        new TaskClean().execute();
+        new TaskClean().execute();
     }
 
 
