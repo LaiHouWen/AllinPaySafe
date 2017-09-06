@@ -8,26 +8,33 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:paddingBottom="6dp">
 
-        <include layout="@layout/fixed_recycler_view"/>
+        <!--<include layout="@layout/fixed_recycler_view" />-->
+
+        <com.pax.ipp.tools.ui.view.FixedRecyclerView
+            android:id="@+id/recyclerView"
+            android:padding="4dp"
+            android:layout_above="@+id/linear_bottom_meory"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
         <ListView
             android:id="@+id/listview_meory"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:cacheColorHint ="#00000000"
-            android:visibility="gone"
-            android:layout_above="@+id/linear_bottom_meory"/>
+            android:layout_above="@+id/linear_bottom_meory"
+            android:cacheColorHint="#00000000"
+            android:visibility="gone" />
 
         <LinearLayout
-            android:id="@+id/linear_bottom_meory"
+            android:id="@id/linear_bottom_meory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:gravity="center"
-            android:background="@mipmap/icon_nav_bottom">
+            android:background="@mipmap/icon_nav_bottom"
+            android:gravity="center">
 
             <Button
                 android:id="@+id/btn_lear_meory"
@@ -36,10 +43,9 @@
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 android:background="@mipmap/btn_clear"
-                android:textColor="@color/white"
-                android:textSize="17sp"
                 android:text="一键清理"
-                />
+                android:textColor="@color/white"
+                android:textSize="17sp" />
         </LinearLayout>
 
     </RelativeLayout>

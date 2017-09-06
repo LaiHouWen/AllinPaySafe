@@ -19,7 +19,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="72dp"
-            android:layout_marginRight="15dp"
+            android:layout_marginRight="0dp"
             android:paddingLeft="15dp">
 
             <android.support.v7.widget.AppCompatImageView
@@ -61,12 +61,14 @@
 
             <android.support.v7.widget.AppCompatCheckBox
                 android:id="@+id/is_clean"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
+                android:gravity="center"
+                android:layout_marginLeft="5dp"
                 android:button="@drawable/bg_leaer_meory"
-                android:clickable="false"
+                android:clickable="true"
                 android:focusable="true" />
 
             <View
