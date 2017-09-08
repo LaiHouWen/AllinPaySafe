@@ -80,6 +80,8 @@ public class MeoryClearAllActivity extends RubbishActivity {
 
     final String text_temp = "确认";
 
+    long cacheSizes= 0;
+
     @Override
     public int getLayoutId() {
         return R.layout.meory_clear_all;
@@ -245,6 +247,7 @@ public class MeoryClearAllActivity extends RubbishActivity {
 
     @Override
     public void onScanProgressUpdated(Context context, int current, int max, long cacheSize, String packageName) {
+        cacheSizes = cacheSize;
         btn_one_cler.setEnabled(false);
         tv_ariable_meory_c.setText(TextFormater.dataSizeFormatArray(cacheSize)[0]);
         tv_ariable_c.setText(TextFormater.dataSizeFormatArray(cacheSize)[1]);
@@ -278,6 +281,10 @@ public class MeoryClearAllActivity extends RubbishActivity {
     @Override
     public void showSnackbar(String message) {
         btn_one_cler.setEnabled(true);
+
+        tv_ariable_meory_c.setText(TextFormater.dataSizeFormatArray(cacheSizes)[0]);
+        tv_ariable_c.setText(TextFormater.dataSizeFormatArray(cacheSizes)[1]);
+
         try {
             GifDrawable gifDrawable = new GifDrawable(mContext.getAssets(),gif_2);
             GifDrawable gifDrawable_3 = new GifDrawable(mContext.getAssets(),gif_3);

@@ -21,6 +21,7 @@ import com.pax.ipp.tools.adapter.CacheListAdapter;
 import com.pax.ipp.tools.event.ClearMeoryEvent;
 import com.pax.ipp.tools.mvp.presenter.RubbishCleanPresenter;
 import com.pax.ipp.tools.ui.base.RubbishActivity;
+import com.pax.ipp.tools.ui.view.Loading_view;
 import com.pax.ipp.tools.utils.AppUtils;
 import com.pax.ipp.tools.utils.BtnUtils;
 import com.pax.ipp.tools.utils.LogUtil;
@@ -56,7 +57,7 @@ public class MeoryClearActivity extends RubbishActivity {
     @BindView(R.id.checbox_all)
     CheckBox checbox_all;
 
-    @BindView(R.id.recyclerView)
+    @BindView(R.id.recyclerView_c)
     RecyclerView recyclerView;
 
     @BindView(R.id.listview_meory)
@@ -71,6 +72,8 @@ public class MeoryClearActivity extends RubbishActivity {
     CacheListAdapter recyclerAdapter;
 
     long cacheSizs=0;
+
+    Loading_view loading_view;
 
     @Override
     public int getLayoutId() {
@@ -87,6 +90,8 @@ public class MeoryClearActivity extends RubbishActivity {
             actionBar.setDisplayShowTitleEnabled(false);
         }
 
+        loading_view = new Loading_view(mContext,R.style.CustomDialog);
+
         checbox_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -97,7 +102,7 @@ public class MeoryClearActivity extends RubbishActivity {
         mRubbishCleanPresenter = new RubbishCleanPresenter(this);
         mRubbishCleanPresenter.attachView(this);
         mRubbishCleanPresenter.onCreate(savedInstanceState);
-
+        loading_view.show();
     }
 
     @Override public void onDestroy() {
@@ -154,6 +159,7 @@ public class MeoryClearActivity extends RubbishActivity {
 
     @Override
     public void onScanStarted(Context context) {
+
         tv_ariable_meory.setText("0");
         tv_ariable_meory_t.setText("KB");
         long sum = AppUtils.getTotalMemory();
@@ -182,6 +188,7 @@ public class MeoryClearActivity extends RubbishActivity {
 
     @Override
     public void onScanCompleted() {
+        loading_view.dismiss();
         btn_lear_meory.setEnabled(true);
         long sum = AppUtils.getTotalMemory();
         long available = AppUtils.getAvailMemory(mContext);
@@ -212,6 +219,7 @@ public class MeoryClearActivity extends RubbishActivity {
 
     @Override
     public void showSnackbar(String message) {
+        loading_view.dismiss();
         checbox_all.setChecked(false);
         btn_lear_meory.setText("一键清理");
         btn_lear_meory.setEnabled(true);

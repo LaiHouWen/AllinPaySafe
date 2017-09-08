@@ -237,6 +237,9 @@ public class RubbishCleanPresenter implements Presenter,
             LogUtil.e("clean Cacheclean CachecleanCache");
             mCleanerService.cleanCache();
 
+        }else {
+            //TODO
+            mRubbishClean.showSnackbar("");
         }
     }
 

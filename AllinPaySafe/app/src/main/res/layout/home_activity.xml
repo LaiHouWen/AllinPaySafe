@@ -59,13 +59,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="68dp"
+        android:layout_marginTop="52dp"
         android:background="@color/transparent">
         <TextView
             android:id="@+id/tv_today_useing"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:paddingTop="15dp"
             android:gravity="center"
             android:textColor="@color/black_3333"
             android:textSize="14sp"
@@ -75,6 +76,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:paddingTop="15dp"
             android:gravity="center"
             android:textColor="@color/black_4444"
             android:textSize="14sp"
@@ -83,13 +85,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:background="@color/transparent">
         <TextView
             android:id="@+id/tv_today_useing_d"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:paddingTop="10dp"
             android:gravity="center"
             android:textColor="@color/blue_1fa2"
             android:textSize="25sp"
@@ -99,6 +101,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:paddingTop="10dp"
             android:gravity="center"
             android:textColor="@color/blue_1fa2"
             android:textSize="25sp"

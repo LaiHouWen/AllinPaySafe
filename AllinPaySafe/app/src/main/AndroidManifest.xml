@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.pax.ipp.tools">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -16,6 +17,9 @@
     <uses-permission android:name="android.permission.CLEAR_APP_CACHE"/>
     <uses-permission android:name="android.permission.GET_PACKAGE_SIZE"/>
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"/>
+
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions"/>
+
 
     <application
         android:name=".App"
@@ -44,9 +48,12 @@
             android:screenOrientation="portrait"/>
         <!--各个app流量统计情况-->
         <activity
-            android:name=".ui.FlowActivity"
+        android:name=".ui.FlowActivity"
+        android:screenOrientation="portrait"/>
+<!--关于-->
+        <activity
+            android:name=".ui.setting.AbountActivity"
             android:screenOrientation="portrait"/>
-
 
         <service
             android:name=".service.CleanerService"

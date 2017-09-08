@@ -22,5 +22,7 @@
 
     <string name="text_all_choise_r">)</string>
 
+    <string name="text_flow_analysis">流量分析</string>
+
 
 </resources>

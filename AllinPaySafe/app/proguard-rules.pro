@@ -149,3 +149,4 @@
 -keep class android.content.pm.IPackageDataObserver { *; }
 -keep class android.content.pm.IPackageStatsObserver { *; }
 -keep class PackageStats{ *; }
+

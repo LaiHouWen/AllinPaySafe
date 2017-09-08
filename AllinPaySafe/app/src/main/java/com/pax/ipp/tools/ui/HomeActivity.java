@@ -100,6 +100,8 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
 //        cirLoaders.setBorderWidth(10 * getResources().getDisplayMetrics().density);
 // Set Wave Amplitude (between 0.00f and 0.10f)
 //        cirLoaders.setAmplitudeRatio(0.03f);
+
+
     }
 
     @Override
@@ -134,7 +136,8 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
 //    }
 
     @OnClick({R.id.imgbtn_about,R.id.btn_learn_merory,R.id.btn_learn_merory_stop
-            ,R.id.btn_learn_merory_contiune})
+            ,R.id.btn_learn_merory_contiune,R.id.tv_today_useing,R.id.tv_today_useing_d,
+            R.id.tv_month_useing,R.id.tv_month_useing_d})
     public void onClinck(View view){
         if (!BtnUtils.isFastDoubleClick())return;
         switch (view.getId()){
@@ -151,6 +154,14 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
                 break;
             case R.id.btn_learn_merory_contiune://继续
 
+                break;
+            case R.id.tv_today_useing://今日流量
+            case R.id.tv_today_useing_d:
+                startActivity(new Intent(mContext,FlowActivity.class).putExtra("time","today"));
+                break;
+            case R.id.tv_month_useing://本月流量
+            case R.id.tv_month_useing_d:
+                startActivity(new Intent(mContext,FlowActivity.class).putExtra("time","month"));
                 break;
                 default:
                     break;
