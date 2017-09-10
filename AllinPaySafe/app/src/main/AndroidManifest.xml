@@ -20,6 +20,7 @@
 
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions"/>
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".App"
@@ -61,6 +62,22 @@
         <service
             android:name=".service.CoreService"
             android:exported="false"/>
+        <service
+            android:name=".service.SaveFlowService"
+            android:exported="true"/>
+
+
+        <receiver android:name="com.pax.ipp.tools.service.BootBroadcastReceiver" >
+            <intent-filter>
+                <!-- 开机广播 -->
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <!-- 关机广播 -->
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.pax.ipp.tools.service.RequestAlarmReceiver" >
+
+        </receiver>
     </application>
 
 </manifest>

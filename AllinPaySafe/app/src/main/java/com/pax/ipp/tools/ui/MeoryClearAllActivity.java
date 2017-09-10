@@ -151,6 +151,7 @@ public class MeoryClearAllActivity extends RubbishActivity {
         try {
             GifDrawable gifDrawable = new GifDrawable(mContext.getAssets(),gif_1);
             gifImageview.setImageDrawable(gifDrawable);
+            gifDrawable.setSpeed(1.3f);
             gifDrawable.addAnimationListener(new AnimationListener() {
                 @Override
                 public void onAnimationCompleted(int loopNumber) {

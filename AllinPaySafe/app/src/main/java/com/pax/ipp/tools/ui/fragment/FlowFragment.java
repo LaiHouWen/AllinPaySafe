@@ -52,13 +52,13 @@ public class FlowFragment extends BaseFragment {
 
     List<FlowModel> lists=new ArrayList<FlowModel>();
 
-    static final String TEMP_TIME = "time";
+    static final String FLAG_TIME = "flag_time";
 
     boolean flag = false;
 
-    public static FlowFragment newInstance(long startTime) {
+    public static FlowFragment newInstance(boolean flag) {
         Bundle arguments = new Bundle();
-        arguments.putLong(TEMP_TIME,startTime);
+        arguments.putBoolean(FLAG_TIME,flag);
         FlowFragment fragment = new FlowFragment();
         fragment.setArguments(arguments);
         return fragment;
@@ -162,8 +162,8 @@ public class FlowFragment extends BaseFragment {
                     model.setmPackageName(packName);
                     model.setmApplicationName(appName);
 
-                    long flows= FlowUtil.getSystemBytesByUid(mContext,appProcessInfo.uid,
-                            FlowUtil.getTimesMonthMorning(),System.currentTimeMillis());
+                    long flows= FlowUtil.getInstance().getSystemBytesByUid(mContext,appProcessInfo.uid,
+                            FlowUtil.getInstance().getTimesMonthMorning(),System.currentTimeMillis());
 //                   long flows= FlowUtil.getBytesByUid(mContext,appProcessInfo.uid,
 //                            FlowUtil.getTimesMonthMorning(),System.currentTimeMillis());
                     LogUtil.e("flow","uid="+appProcessInfo.uid+" appName="+appName+" flows="+ flows);
@@ -279,45 +279,29 @@ public class FlowFragment extends BaseFragment {
                                 Drawable icon = appInfo.loadIcon(packageManager);
                                 String appName = appInfo.loadLabel(packageManager)
                                         .toString();
-//                                abAppProcessInfo.icon = icon;
-//                                abAppProcessInfo.appName = appName;
 
                                 model.setmIcon(icon);
                                 model.setmPackageName(packName);
                                 model.setmApplicationName(appName);
 
-                                long flows = FlowUtil.getSystemBytesByUid(mContext, appProcessInfo.uid,
-                                        FlowUtil.getTimesMonthMorning(), System.currentTimeMillis());
+                                long flows = FlowUtil.getInstance().getSystemBytesByUid(mContext, appProcessInfo.uid,
+                                        FlowUtil.getInstance().getTimesMonthMorning(), System.currentTimeMillis());
 //                   long flows= FlowUtil.getBytesByUid(mContext,appProcessInfo.uid,
 //                            FlowUtil.getTimesMonthMorning(),System.currentTimeMillis());
+                                if (getArguments().getBoolean(FLAG_TIME)){//今日
+                                    flows = FlowUtil.getInstance().getTodayBytesByUid(mContext,appProcessInfo.uid);
+                                }else {//月
+                                    flows = FlowUtil.getInstance().getMonthBytesByUid(mContext,appProcessInfo.uid);
+                                }
                                 LogUtil.e("flow", "uid=" + appProcessInfo.uid + " appName=" + appName + " flows=" + flows);
                                 model.setFlowSize(flows);
 //                                publishProgress(0, lists.size(), 0, "开始扫描");
                                 if (flows>0){
                                     listss.add(model);
                                 }
-
                                 //abAppProcessInfo.packName = packName;
                             } catch (PackageManager.NameNotFoundException e) {
-//                                abAppProcessInfo.icon = mContext.getResources()
-//                                        .getDrawable(
-//                                                R.mipmap.ic_launcher);
-                                //String packName = appProcessInfo.processName;
-                                appInfo = getApplicationInfo(
-                                        appProcessInfo.processName.split(":")[0]);
-                                if (appInfo != null) {
-                                    Drawable icon = appInfo.loadIcon(packageManager);
-//                                    abAppProcessInfo.icon = icon;
-                                    packName = appProcessInfo.processName.split(":")[0];
-                                    model.setmIcon(icon);
-                                }
-//                                abAppProcessInfo.isSystem = true;
-//                                abAppProcessInfo.appName = appProcessInfo.processName;
-
-                                model.setmPackageName(packName);
-                                model.setmApplicationName(appProcessInfo.processName);
-                                //abAppProcessInfo.packName = packName;
-                                listss.add(model);
+//
                             } catch (RemoteException e) {
                                 e.printStackTrace();
                             } finally {

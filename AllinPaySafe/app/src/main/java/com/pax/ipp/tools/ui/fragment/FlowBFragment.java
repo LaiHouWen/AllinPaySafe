@@ -149,8 +149,9 @@ public class FlowBFragment extends BaseFragment {
                     model.setmPackageName(packName);
                     model.setmApplicationName(appName);
 
-                    long flows= FlowUtil.getSystemBytesByUid(mContext,appProcessInfo.uid,
-                            FlowUtil.getTimesMonthMorning(),System.currentTimeMillis());
+                    long flows= FlowUtil.getInstance().getSystemBytesByUid(mContext,appProcessInfo.uid,
+                            FlowUtil.getInstance().getTimesMonthMorning(),System.currentTimeMillis());
+
 //                   long flows= FlowUtil.getBytesByUid(mContext,appProcessInfo.uid,
 //                            FlowUtil.getTimesMonthMorning(),System.currentTimeMillis());
                     LogUtil.e("flow","uid="+appProcessInfo.uid+" appName="+appName+" flows="+ flows);

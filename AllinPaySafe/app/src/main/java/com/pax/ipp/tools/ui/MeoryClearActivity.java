@@ -130,6 +130,7 @@ public class MeoryClearActivity extends RubbishActivity {
         switch (view.getId()){
             case R.id.btn_lear_meory://一键清理
                 if (BtnUtils.isFastDoubleClick()){
+                    loading_view.show();
                     btn_lear_meory.setText("清理中...");
                     btn_lear_meory.setEnabled(false);
                     mRubbishCleanPresenter.cleanMemory();

@@ -21,8 +21,10 @@ import com.pax.ipp.tools.R;
 import com.pax.ipp.tools.mvp.impl.CircularLoaderView;
 import com.pax.ipp.tools.mvp.presenter.CircularLoaderPresenter;
 import com.pax.ipp.tools.ui.base.BaseActivity;
+import com.pax.ipp.tools.ui.setting.AbountActivity;
 import com.pax.ipp.tools.utils.BtnUtils;
 import com.pax.ipp.tools.utils.DateUtil;
+import com.pax.ipp.tools.utils.FlowUtil;
 import com.pax.ipp.tools.utils.LogUtil;
 import com.pax.ipp.tools.utils.TextFormater;
 
@@ -74,6 +76,19 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
 
     CircularLoaderPresenter cirPresenter;
 
+    @BindView(R.id.tv_more_detail)
+    TextView tv_more_detail;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //流量使用情况
+        long flowToday = FlowUtil.getInstance().getTodayBytes(this);
+        tv_today_useing_d.setText(TextFormater.dataSizeFormat(flowToday));//今日消耗的流量
+        long flowMonth = FlowUtil.getInstance().getMonthBytes(this);
+        tv_month_useing_d.setText(TextFormater.dataSizeFormat(flowMonth));//本月的总流量
+    }
+
     @Override
     public int getLayoutId() {
         return R.layout.home_activity;
@@ -101,6 +116,12 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
 // Set Wave Amplitude (between 0.00f and 0.10f)
 //        cirLoaders.setAmplitudeRatio(0.03f);
 
+
+        //流量使用情况
+        long flowToday = FlowUtil.getInstance().getTodayBytes(this);
+        tv_today_useing_d.setText(TextFormater.dataSizeFormat(flowToday));//今日消耗的流量
+        long flowMonth = FlowUtil.getInstance().getMonthBytes(this);
+        tv_month_useing_d.setText(TextFormater.dataSizeFormat(flowMonth));//本月的总流量
 
     }
 
@@ -137,7 +158,7 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
 
     @OnClick({R.id.imgbtn_about,R.id.btn_learn_merory,R.id.btn_learn_merory_stop
             ,R.id.btn_learn_merory_contiune,R.id.tv_today_useing,R.id.tv_today_useing_d,
-            R.id.tv_month_useing,R.id.tv_month_useing_d})
+            R.id.tv_month_useing,R.id.tv_month_useing_d,R.id.tv_more_detail})
     public void onClinck(View view){
         if (!BtnUtils.isFastDoubleClick())return;
         switch (view.getId()){
@@ -162,6 +183,10 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
             case R.id.tv_month_useing://本月流量
             case R.id.tv_month_useing_d:
                 startActivity(new Intent(mContext,FlowActivity.class).putExtra("time","month"));
+                break;
+            case R.id.tv_more_detail://清除流量
+                FlowUtil.getInstance().cleanCachaFlow();
+                FlowUtil.getInstance().cleanCachaFlowByUid();
                 break;
                 default:
                     break;
@@ -194,7 +219,7 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
             case R.id.action_settings://关于
                 if (popup!=null)
                 popup.dismiss();
-//                startActivity(new Intent(this, AbountActivity.class));
+                startActivity(new Intent(this, AbountActivity.class));
                 break;
             default:
                 break;
@@ -225,8 +250,8 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
                 TextFormater.dataSizeFormat(sum));//使用情况
 
         //流量使用情况
-        tv_today_useing_d.setText("0MB");//今日消耗的流量
-        tv_month_useing_d.setText("0MB");//本月的总流量
+//        tv_today_useing_d.setText("0MB");//今日消耗的流量
+//        tv_month_useing_d.setText("0MB");//本月的总流量
 
     }
 

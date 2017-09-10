@@ -24,5 +24,9 @@
 
     <string name="text_flow_analysis">流量分析</string>
 
+    <string name="text_version_update">版本更新</string>
+
+    <string name="text_copy_reserver">Copyriht &#169; 2017 Pax.All Rights Reserver</string>
+
 
 </resources>

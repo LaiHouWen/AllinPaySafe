@@ -2842,4 +2842,8 @@ public class DateUtil {
         DecimalFormat df = new DecimalFormat("#.000");
         return df.format(date);
     }
+
+    /**
+     *
+     */
 }

@@ -102,8 +102,8 @@ public class FlowActivity  extends BaseActivity {
     private void tabLayoutInit() {
         mFragments.clear();
         mTabEntities.clear();
-        mFragments.add(FlowFragment.newInstance(FlowUtil.getTimesTodayMorning()));//今日
-        mFragments.add(FlowFragment.newInstance(FlowUtil.getTimesMonthMorning()));//本月
+        mFragments.add(FlowFragment.newInstance(true));//今日
+        mFragments.add(FlowFragment.newInstance(false));//本月
         for (int i = 0; i < mTitles.length; i++) {
             mTabEntities.add(new TabEntity(mTitles[i]));
         }
