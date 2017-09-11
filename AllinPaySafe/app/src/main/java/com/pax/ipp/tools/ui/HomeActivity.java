@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
+import com.pax.ipp.tools.Constant;
 import com.pax.ipp.tools.R;
 import com.pax.ipp.tools.mvp.impl.CircularLoaderView;
 import com.pax.ipp.tools.mvp.presenter.CircularLoaderPresenter;
@@ -83,10 +84,12 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
     protected void onResume() {
         super.onResume();
         //流量使用情况
-        long flowToday = FlowUtil.getInstance().getTodayBytes(this);
-        tv_today_useing_d.setText(TextFormater.dataSizeFormat(flowToday));//今日消耗的流量
-        long flowMonth = FlowUtil.getInstance().getMonthBytes(this);
-        tv_month_useing_d.setText(TextFormater.dataSizeFormat(flowMonth));//本月的总流量
+        if (Constant.flowTodayMonth!=null&&Constant.flowTodayMonth.containsKey(DateUtil.getToday())) {
+            long flowToday = FlowUtil.getInstance().getTodayBytes(this);
+            tv_today_useing_d.setText(TextFormater.dataSizeFormat(flowToday));//今日消耗的流量
+            long flowMonth = FlowUtil.getInstance().getMonthBytes(this);
+            tv_month_useing_d.setText(TextFormater.dataSizeFormat(flowMonth));//本月的总流量
+        }
     }
 
     @Override
@@ -118,10 +121,10 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
 
 
         //流量使用情况
-        long flowToday = FlowUtil.getInstance().getTodayBytes(this);
-        tv_today_useing_d.setText(TextFormater.dataSizeFormat(flowToday));//今日消耗的流量
-        long flowMonth = FlowUtil.getInstance().getMonthBytes(this);
-        tv_month_useing_d.setText(TextFormater.dataSizeFormat(flowMonth));//本月的总流量
+//        long flowToday = FlowUtil.getInstance().getTodayBytes(this);
+        tv_today_useing_d.setText(TextFormater.dataSizeFormat(0));//今日消耗的流量
+//        long flowMonth = FlowUtil.getInstance().getMonthBytes(this);
+        tv_month_useing_d.setText(TextFormater.dataSizeFormat(0));//本月的总流量
 
     }
 
@@ -133,6 +136,8 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        FlowUtil.getInstance().saveFlowDate(mContext,DateUtil.getToday());//保存总流量
+        FlowUtil.getInstance().saveFlowUidBytes(mContext);
         cirPresenter.onDestroy();
     }
 
@@ -185,8 +190,8 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
                 startActivity(new Intent(mContext,FlowActivity.class).putExtra("time","month"));
                 break;
             case R.id.tv_more_detail://清除流量
-                FlowUtil.getInstance().cleanCachaFlow();
-                FlowUtil.getInstance().cleanCachaFlowByUid();
+                FlowUtil.getInstance().cleanCachaFlow(mContext);
+                FlowUtil.getInstance().cleanCachaFlowByUid(mContext);
                 break;
                 default:
                     break;

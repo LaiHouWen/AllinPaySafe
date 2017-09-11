@@ -10,8 +10,10 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.text.TextUtils;
 
 import com.pax.ipp.tools.Constant;
+import com.pax.ipp.tools.utils.DateUtil;
 import com.pax.ipp.tools.utils.FlowUtil;
 import com.pax.ipp.tools.utils.LogUtil;
 import com.pax.ipp.tools.utils.SharedPreUtils;
@@ -39,25 +41,50 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
             //example:启动程序
             LogUtil.e(TAG,"开机了");
+
+            String today = DateUtil.getToday();
+            String lastDate = SharedPreUtils.getInstanse().getKeyValue(context,Constant.Time_ShunDown);
+            if (!TextUtils.isEmpty(lastDate)&&lastDate.equals(today)){//今天开关机
+            }else {
+                //月
+                if (!TextUtils.isEmpty(lastDate)&&!lastDate.substring(0,7).equals(today.substring(0,7))){
+                    SharedPreUtils.getInstanse().putKeyValue(context, Constant.Time_Availble_month,lastDate);
+                }
+                //有效值
+                SharedPreUtils.getInstanse().putKeyValue(context, Constant.Time_Availble, lastDate);
+            }
+            //保存开机时间
+            SharedPreUtils.getInstanse().putKeyValue(context,Constant.Time_StartDown,today);
+            //月
+
         }
 
         //系统关闭广播接收器
 
         if (intent.getAction().equals(Intent.ACTION_SHUTDOWN)) {
-            LogUtil.e(TAG,"关机了");
-            //关机时间
-            long shunt_time = System.currentTimeMillis();
-            SharedPreUtils.getInstanse().putKeyValueLong(context, Constant.Time_ShunDown, shunt_time);
-            LogUtil.e("flow_time-shunt time保存时间-",shunt_time+"");
-//            Intent intent1 = new Intent(context, SaveFlowService.class);
-//            intent1.putExtra(Constant.TIME_TEMP,System.currentTimeMillis());
-//            context.bindService(intent1,
-//                    mServiceConnection, Context.BIND_AUTO_CREATE);
 
-            FlowUtil.getInstance().saveFlowDate(context,shunt_time);//保存总流量
+            LogUtil.e(TAG,"关机了");
+            String type= DateUtil.getToday();//年月日
+            SharedPreUtils.getInstanse().putKeyValue(context, Constant.Time_ShunDown, type);
+            LogUtil.e("flow_time-shunt关机 time保存时间=",type+"");
+            //开机时间
+            String startDate = SharedPreUtils.getInstanse().getKeyValue(context,Constant.Time_StartDown);
+
+            if (!TextUtils.isEmpty(startDate)&&startDate.equals(type)){//今天开关机
+            }else {
+                //月
+                if (!TextUtils.isEmpty(startDate)&&!type.substring(0,7).equals(startDate.substring(0,7))){
+                    SharedPreUtils.getInstanse().putKeyValue(context, Constant.Time_Availble_month,type);
+                }
+                //有效值
+                SharedPreUtils.getInstanse().putKeyValue(context, Constant.Time_Availble, type);
+            }
+
+            FlowUtil.getInstance().saveFlowDate(context,type);//保存总流量
+            FlowUtil.getInstance().saveFlowUidBytes(context);
 
             context.startService(new Intent(context, SaveFlowService.class).
-                    putExtra(Constant.TIME_TEMP,shunt_time));
+                    putExtra(Constant.TIME_TEMP,type));
         }
     }
 

@@ -27,6 +27,10 @@ import java.util.TimeZone;
  */
 
 public class DateUtil {
+
+    static String YYMMDD = "yyyyMMdd";
+    static String YY_MM_DD = "yyyy-MM-dd";
+
     static SimpleDateFormat sdfShort = new SimpleDateFormat("yyyyMMdd");
     static SimpleDateFormat sdfLong = new SimpleDateFormat("yyyy-MM-dd");
     static SimpleDateFormat sdfLongCn = new SimpleDateFormat("yyyy年MM月dd日");

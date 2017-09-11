@@ -34,7 +34,11 @@ public class GsonUtil {
         String jsonStr = gson.toJson(map);
         return jsonStr;
     }
-
+    public static String mapToJsonString(Map<String, Long> map) {
+        Gson gson = new Gson();
+        String jsonStr = gson.toJson(map);
+        return jsonStr;
+    }
     /**
      * 将Map转化为Json
      *
@@ -42,6 +46,11 @@ public class GsonUtil {
      * @return String
      */
     public static String mapToJsonIntegerLong(Map<Integer, Map<Long,Long>> map) {
+        Gson gson = new Gson();
+        String jsonStr = gson.toJson(map);
+        return jsonStr;
+    }
+    public static String mapToJsonIntegerString(Map<Integer, Map<String,Long>> map) {
         Gson gson = new Gson();
         String jsonStr = gson.toJson(map);
         return jsonStr;

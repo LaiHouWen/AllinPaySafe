@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
 import com.jaredrummler.android.processes.AndroidProcesses;
+import com.pax.ipp.tools.Constant;
 import com.pax.ipp.tools.R;
 import com.pax.ipp.tools.adapter.FlowListAdapter;
 import com.pax.ipp.tools.model.AppProcessInfo;
@@ -162,8 +163,7 @@ public class FlowFragment extends BaseFragment {
                     model.setmPackageName(packName);
                     model.setmApplicationName(appName);
 
-                    long flows= FlowUtil.getInstance().getSystemBytesByUid(mContext,appProcessInfo.uid,
-                            FlowUtil.getInstance().getTimesMonthMorning(),System.currentTimeMillis());
+                    long flows= FlowUtil.getInstance().getTodayBytesByUid(mContext,appProcessInfo.uid);
 //                   long flows= FlowUtil.getBytesByUid(mContext,appProcessInfo.uid,
 //                            FlowUtil.getTimesMonthMorning(),System.currentTimeMillis());
                     LogUtil.e("flow","uid="+appProcessInfo.uid+" appName="+appName+" flows="+ flows);
@@ -191,7 +191,7 @@ public class FlowFragment extends BaseFragment {
                     model.setmApplicationName(appProcessInfo.processName);
                     //abAppProcessInfo.packName = packName;
                     lists.add(model);
-                } catch (RemoteException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }finally {
                     abAppProcessInfo.packName = packName;
@@ -262,9 +262,7 @@ public class FlowFragment extends BaseFragment {
                                 = AndroidProcesses.getRunningAppProcessInfo(mContext);
 
                         for (ActivityManager.RunningAppProcessInfo appProcessInfo : appProcessList) {
-//                            abAppProcessInfo = new AppProcessInfo(
-//                                    appProcessInfo.processName, appProcessInfo.pid,
-//                                    appProcessInfo.uid);
+//
                             model = new FlowModel();
                             String packName = appProcessInfo.processName;
                             try {
@@ -284,10 +282,7 @@ public class FlowFragment extends BaseFragment {
                                 model.setmPackageName(packName);
                                 model.setmApplicationName(appName);
 
-                                long flows = FlowUtil.getInstance().getSystemBytesByUid(mContext, appProcessInfo.uid,
-                                        FlowUtil.getInstance().getTimesMonthMorning(), System.currentTimeMillis());
-//                   long flows= FlowUtil.getBytesByUid(mContext,appProcessInfo.uid,
-//                            FlowUtil.getTimesMonthMorning(),System.currentTimeMillis());
+                                long flows = 0;
                                 if (getArguments().getBoolean(FLAG_TIME)){//今日
                                     flows = FlowUtil.getInstance().getTodayBytesByUid(mContext,appProcessInfo.uid);
                                 }else {//月
@@ -302,7 +297,7 @@ public class FlowFragment extends BaseFragment {
                                 //abAppProcessInfo.packName = packName;
                             } catch (PackageManager.NameNotFoundException e) {
 //
-                            } catch (RemoteException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             } finally {
                             }
@@ -313,12 +308,12 @@ public class FlowFragment extends BaseFragment {
         Observer<List<FlowModel>> observer = new Observer<List<FlowModel>>() {
             @Override
             public void onCompleted() {
-
+                loading_view.dismiss();
             }
 
             @Override
             public void onError(Throwable e) {
-
+                loading_view.dismiss();
             }
 
             @Override
@@ -351,5 +346,34 @@ public class FlowFragment extends BaseFragment {
                 AndroidSchedulers.mainThread()).subscribe(
                 observer );
     }
+
+
+private void setAdapter(){
+    loading_view.show();
+    flag=true;
+    lists.clear();
+    if (Constant.flowHistoryList!=null){
+
+    }
+
+
+//
+//    // 排序
+//    Collections.sort(flowModelList,
+//            new Comparator<FlowModel>() {
+//                @Override
+//                public int compare(FlowModel o1, FlowModel o2) {
+//                    return new Double(o1.getFlowSize()).compareTo(new Double(o2.getFlowSize()));
+//                }}
+//    );
+//    Collections.reverse(flowModelList);
+//    loading_view.dismiss();
+//
+//    LogUtil.e("flow",flowModelList.size()+"");
+//    lists.addAll(flowModelList);
+//    flowListAdapter.setList(flowModelList);
+//    flowListAdapter.notifyDataSetChanged();
+}
+
 
 }

@@ -20,6 +20,7 @@ import com.pax.ipp.tools.Constant;
 import com.pax.ipp.tools.R;
 import com.pax.ipp.tools.model.AppProcessInfo;
 import com.pax.ipp.tools.model.FlowModel;
+import com.pax.ipp.tools.utils.DateUtil;
 import com.pax.ipp.tools.utils.FlowUtil;
 import com.pax.ipp.tools.utils.LogUtil;
 import com.pax.ipp.tools.utils.SharedPreUtils;
@@ -44,7 +45,7 @@ public class SaveFlowService extends Service {
     private CleanerServiceBinder mBinder = new CleanerServiceBinder();
 
     Context mContext;
-    long time_temp = 0;
+    String time_temp =  DateUtil.getToday();
 
     @Nullable
     @Override
@@ -69,8 +70,8 @@ public class SaveFlowService extends Service {
     @Override
     public int onStartCommand(Intent intent,int flags, int startId) {
         if (intent!=null)
-        time_temp= intent.getLongExtra(Constant.TIME_TEMP,System.currentTimeMillis());
-        else  time_temp=System.currentTimeMillis();
+        time_temp= intent.getStringExtra(Constant.TIME_TEMP);
+        else  time_temp= DateUtil.getToday();
         LogUtil.e("flow===","save flow service");
 
         synchronized (SaveProcessFlow.class){
@@ -96,8 +97,8 @@ public class SaveFlowService extends Service {
 
         @Override
         protected String doInBackground(Object... params) {
-            long time_p = (long)params[0];
-            LogUtil.e("flow_time-保存时间-",(long)params[0]+"");
+            String time_p = (String) params[0];
+            LogUtil.e("flow_time-保存时间-",(String) params[0]+"");
 
             FlowUtil.getInstance().saveFlowDate(mContext,time_p);//保存总流量
 
@@ -108,6 +109,8 @@ public class SaveFlowService extends Service {
             List<ActivityManager.RunningAppProcessInfo> appProcessList
                     = AndroidProcesses.getRunningAppProcessInfo(mContext);
             publishProgress(0, appProcessList.size(), 0, "开始扫描");
+
+            LogUtil.e("flow_size=",appProcessList.size()+"");
 
             for (ActivityManager.RunningAppProcessInfo appProcessInfo : appProcessList) {
                 abAppProcessInfo = new AppProcessInfo(

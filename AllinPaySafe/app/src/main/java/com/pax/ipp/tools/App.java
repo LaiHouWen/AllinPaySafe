@@ -5,10 +5,13 @@ import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.SystemClock;
 
 import com.pax.ipp.tools.model.BaseFlowModel;
 import com.pax.ipp.tools.model.FlowModel;
 import com.pax.ipp.tools.service.RequestAlarmReceiver;
+import com.pax.ipp.tools.service.SaveFlowService;
+import com.pax.ipp.tools.utils.DateUtil;
 import com.pax.ipp.tools.utils.FlowUtil;
 
 import java.util.Calendar;
@@ -39,6 +42,9 @@ public class App extends Application {
         Constant.flowTodayMonth = FlowUtil.getInstance().getFlowTotail(this);
         Constant.flowHistoryList = FlowUtil.getInstance().getFlowTotailUid(this);
 
+        startService(new Intent(this, SaveFlowService.class).
+                putExtra(Constant.TIME_TEMP, DateUtil.getToday()));
+
         setAlarmTime(this);
     }
 
@@ -61,8 +67,11 @@ public class App extends Application {
         calendar.set(Calendar.SECOND, 20);
         calendar.set(Calendar.MILLISECOND, 0);
 
-        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                300*1000, sender);
+        //触发服务的起始时间
+        long triggerAtTime = SystemClock.elapsedRealtime();
+
+        am.setRepeating(AlarmManager.RTC_WAKEUP, triggerAtTime,
+                30*60*1000, sender);
 
 //        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
 //                INTERVAL, sender);

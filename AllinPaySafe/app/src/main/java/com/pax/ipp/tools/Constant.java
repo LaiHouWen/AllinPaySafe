@@ -17,10 +17,14 @@ public class Constant {
 
     public static final String FlowPaxTools_Totail = "flow_pax_tools_totail";//保存流量信息
     public static final String FlowPaxToolsByUid = "flow_pax_tools_by_uid";//保存流量信息
-    public static Map<Integer,Map<Long,Long>> flowHistoryList=new HashMap<Integer,Map<Long,Long>>();//所有的历史流量信息
-    public static Map<Long,Long> flowTodayMonth = new HashMap<Long,Long>();//每天的总流量
+    public static Map<Integer,Map<String,Long>> flowHistoryList=new HashMap<Integer,Map<String,Long>>();//所有的历史流量信息
+    public static Map<String,Long> flowTodayMonth = new HashMap<String,Long>();//每天的总流量
 
     public static final String Time_ShunDown = "shunt_down_time";//关机时间
+    public static final String Time_StartDown = "start_down_time";//开机时间
+    public static final String Time_Availble = "time_avarible";//上次关机有效时间
+    public static final String Time_Availble_month = "time_avarible_month";//上个月有效时间
+
 
     public static final String TIME_TEMP = "time_temp_service";
 
