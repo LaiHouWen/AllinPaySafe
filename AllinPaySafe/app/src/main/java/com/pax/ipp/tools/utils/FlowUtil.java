@@ -210,6 +210,7 @@ public class FlowUtil {
         //开机到现在的总流量mobile
         long totail = TrafficStats.getTotalRxBytes()+TrafficStats.getTotalTxBytes();
         long sum = 0;
+        LogUtil.d("flow totail",totail+"");
         //有效时间
         String time_shundown =  SharedPreUtils.getInstanse().getKeyValue(context,Constant.Time_ShunDown);
         LogUtil.d("flow 有效时间",time_shundown);
@@ -227,10 +228,12 @@ public class FlowUtil {
                     sum=Constant.flowTodayMonth.get(DateUtil.getToday())-
                             Constant.flowTodayMonth.get(DateUtil.getYesterday());
                 }else{//
-                    if (!today.equals(time_shundown))
-                    sum=Constant.flowTodayMonth.get(today)-
-                    Constant.flowTodayMonth.get(time_shundown);
-                    else sum=Constant.flowTodayMonth.get(today);
+                    if (!today.equals(time_shundown)) {
+                        if ( Constant.flowTodayMonth.containsKey(time_shundown))
+                        sum = Constant.flowTodayMonth.get(today)-
+                                Constant.flowTodayMonth.get(time_shundown);
+                        else sum = Constant.flowTodayMonth.get(today);
+                    }else sum=Constant.flowTodayMonth.get(today);
                 }
             }
         }
@@ -267,29 +270,29 @@ public class FlowUtil {
      * 根据某个进程查询它今天的流量
      * @return
      */
-    public long getTodayBytesByUid(Context context,int uid){
+    public long getTodayBytesByUid(Context context,int uid,String packageName){
         //从开机到关机
 //        long flow_mobile =  getMobileBytes(uid);
         long sum =0;
         String time_shundown = SharedPreUtils.getInstanse().getKeyValue(context,Constant.Time_ShunDown);
 
-        if (Constant.flowHistoryList!=null&&Constant.flowHistoryList.containsKey(uid)){
+        if (Constant.flowHistoryList!=null&&Constant.flowHistoryList.containsKey(packageName)){
             if (TextUtils.isEmpty(time_shundown)){//无关机
-                if (Constant.flowHistoryList.get(uid).containsKey(DateUtil.getYesterday())){
-                    sum=Constant.flowHistoryList.get(uid).get(DateUtil.getToday())-
-                            Constant.flowHistoryList.get(uid).get(DateUtil.getYesterday());
+                if (Constant.flowHistoryList.get(packageName).containsKey(DateUtil.getYesterday())){
+                    sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday())-
+                            Constant.flowHistoryList.get(packageName).get(DateUtil.getYesterday());
                 }else{
-                    sum=Constant.flowHistoryList.get(uid).get(DateUtil.getToday());
+                    sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday());
                 }
             }else {//关机
-                if (Constant.flowHistoryList.get(uid).containsKey(DateUtil.getYesterday())){
-                    sum=Constant.flowHistoryList.get(uid).get(DateUtil.getToday())-
-                            Constant.flowHistoryList.get(uid).get(DateUtil.getYesterday());
+                if (Constant.flowHistoryList.get(packageName).containsKey(DateUtil.getYesterday())){
+                    sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday())-
+                            Constant.flowHistoryList.get(packageName).get(DateUtil.getYesterday());
                 }else{
                     if (!DateUtil.getToday().equals(time_shundown))
-                    sum=Constant.flowHistoryList.get(uid).get(DateUtil.getToday())-
-                            Constant.flowHistoryList.get(uid).get(time_shundown);
-                    else sum=Constant.flowHistoryList.get(uid).get(DateUtil.getToday());
+                    sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday())-
+                            Constant.flowHistoryList.get(packageName).get(time_shundown);
+                    else sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday());
                 }
             }
         }else {
@@ -303,21 +306,21 @@ public class FlowUtil {
      * 根据某个进程查询它当月的流量
      * @return
      */
-    public long getMonthBytesByUid(Context context,int uid) {
+    public long getMonthBytesByUid(Context context,int uid,String packageName) {
         //从开机到关机
 //        long flow_mobile = getMobileBytes(uid);
         long sum = 0;
         String time_shundown = SharedPreUtils.getInstanse().getKeyValue(context, Constant.Time_Availble_month);
 
-        if (Constant.flowHistoryList!=null&&Constant.flowHistoryList.containsKey(uid)){
+        if (Constant.flowHistoryList!=null&&Constant.flowHistoryList.containsKey(packageName)){
             if (TextUtils.isEmpty(time_shundown)){//
-                    sum=Constant.flowHistoryList.get(uid).get(DateUtil.getToday());
+                    sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday());
 
             }else {//关机
                 if (!DateUtil.getToday().substring(0,7).equals(time_shundown.substring(0,7)))
-                    sum=Constant.flowHistoryList.get(uid).get(DateUtil.getToday())-
-                            Constant.flowHistoryList.get(uid).get(time_shundown);
-                else sum=Constant.flowHistoryList.get(uid).get(DateUtil.getToday());
+                    sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday())-
+                            Constant.flowHistoryList.get(packageName).get(time_shundown);
+                else sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday());
             }
         }else {
             sum=0;
@@ -334,6 +337,7 @@ public class FlowUtil {
         long sum =0;
         //开机到现在的总流量mobile
         long totail = TrafficStats.getTotalRxBytes()+TrafficStats.getTotalTxBytes();
+        LogUtil.d("flow totail saveFlowDate",totail+"");
         //开机时间
         String time_shundown = SharedPreUtils.getInstanse().getKeyValue(context,Constant.Time_ShunDown);
         LogUtil.e("flow_保存总流量___","上一次关机时间="+time_shundown);
@@ -365,30 +369,31 @@ public class FlowUtil {
      * 关机
      * @param uid
      */
-    public long saveFlowByUid(Context context,int uid,String shunDownTime) {
+    public long saveFlowByUid(Context context,int uid,String packgeName,String shunDownTime) {
         if (Constant.flowHistoryList == null) return 0;
         //开机到现在的流量
         long totail = TrafficStats.getUidRxBytes(uid) + TrafficStats.getUidTxBytes(uid);
+        LogUtil.d("flow totail saveFlowByUid",totail+"");
 //        long totail = getTotailByUid(uid);
         String time_shundown = SharedPreUtils.getInstanse().getKeyValue(context, Constant.Time_ShunDown);
         long sum = 0;
         if (Constant.flowHistoryList != null && Constant.flowHistoryList.containsKey(uid) ) {
             if (TextUtils.isEmpty(time_shundown)) {//没有关机
                 sum = totail;
-                Constant.flowHistoryList.get(uid).put(shunDownTime, sum);
+                Constant.flowHistoryList.get(packgeName).put(shunDownTime, sum);
             }else {//关机了
                 if (!TextUtils.isEmpty(time_shundown)&&Constant.flowHistoryList.get(uid).containsKey(time_shundown))
-                sum = totail+Constant.flowHistoryList.get(uid).get(time_shundown);
+                sum = totail+Constant.flowHistoryList.get(packgeName).get(time_shundown);
                 else sum = totail;
-                Constant.flowHistoryList.get(uid).put(shunDownTime, sum);
+                Constant.flowHistoryList.get(packgeName).put(shunDownTime, sum);
             }
          }else{
             sum = totail;
             Map<String,Long> map = new HashMap<String,Long>();
             map.put(shunDownTime,sum);
-            Constant.flowHistoryList.put(uid,map);
+            Constant.flowHistoryList.put(packgeName,map);
         }
-        LogUtil.e("flow_保存总流量_add__uid_","uid="+uid+" key="+shunDownTime+" value="+totail);
+        LogUtil.e("flow_保存总流量_add__uid_","uid="+uid +" packge="+packgeName+" key="+shunDownTime+" value="+totail);
         return sum;
     }
 
@@ -423,13 +428,13 @@ public class FlowUtil {
      * uid 所有的流量
      * @return
      */
-    public Map<Integer,Map<String,Long>> getFlowTotailUid(Context context){
+    public Map<String,Map<String,Long>> getFlowTotailUid(Context context){
         String totail = SharedPreUtils.getInstanse().getKeyValue(context,Constant.FlowPaxToolsByUid);
         Gson gson = new Gson();
-        Type type1 = new TypeToken<Map<Integer,Map<String,Long>>>(){}.getType();
-        Map<Integer,Map<String,Long>> map = gson.fromJson(totail, type1);
+        Type type1 = new TypeToken<Map<String,Map<String,Long>>>(){}.getType();
+        Map<String,Map<String,Long>> map = gson.fromJson(totail, type1);
         LogUtil.e("flow--读取uid总流量",map==null?"null":map.toString());
-        return map==null?new HashMap<Integer,Map<String,Long>>():map;
+        return map==null?new HashMap<String,Map<String,Long>>():map;
     }
 
     /**
@@ -448,6 +453,7 @@ public class FlowUtil {
             Constant.flowHistoryList.clear();
             SharedPreUtils.getInstanse().putKeyValue(context,Constant.FlowPaxToolsByUid,"");
             LogUtil.e("删除 所以的app流量");
+            SharedPreUtils.getInstanse().putKeyValue(context,Constant.Time_ShunDown,null);
         }
     }
 

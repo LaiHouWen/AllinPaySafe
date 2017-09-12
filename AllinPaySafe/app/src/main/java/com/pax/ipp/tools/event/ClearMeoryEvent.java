@@ -10,13 +10,8 @@ public class ClearMeoryEvent {
 
     public String message = "";
 
-    public ClearMeoryEvent(long meorySize) {
-        super();
+    public ClearMeoryEvent(long meorySize, String message) {
         this.meorySize = meorySize;
-    }
-
-    public ClearMeoryEvent(String message) {
-        super();
         this.message = message;
     }
 

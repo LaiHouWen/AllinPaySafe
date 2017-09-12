@@ -17,7 +17,7 @@ public class Constant {
 
     public static final String FlowPaxTools_Totail = "flow_pax_tools_totail";//保存流量信息
     public static final String FlowPaxToolsByUid = "flow_pax_tools_by_uid";//保存流量信息
-    public static Map<Integer,Map<String,Long>> flowHistoryList=new HashMap<Integer,Map<String,Long>>();//所有的历史流量信息
+    public static Map<String,Map<String,Long>> flowHistoryList=new HashMap<String,Map<String,Long>>();//所有的历史流量信息
     public static Map<String,Long> flowTodayMonth = new HashMap<String,Long>();//每天的总流量
 
     public static final String Time_ShunDown = "shunt_down_time";//关机时间

@@ -77,8 +77,14 @@
             </intent-filter>
         </receiver>
         <receiver android:name="com.pax.ipp.tools.service.RequestAlarmReceiver" >
-
         </receiver>
+        <service android:name=".service.AppFlowService"
+            android:process=":remote">
+            <intent-filter>
+                <action android:name="com.pax.ipp.aidl"/>
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

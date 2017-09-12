@@ -139,7 +139,7 @@ public class SaveFlowService extends Service {
                     model.setmApplicationName(appName);
 
 //                    FlowUtil.getInstance().saveFlowDate(mContext,time_p);//保存总流量
-                    FlowUtil.getInstance().saveFlowByUid(mContext,appProcessInfo.uid,time_p);
+                    FlowUtil.getInstance().saveFlowByUid(mContext,appProcessInfo.uid,appProcessInfo.processName,time_p);
 
                     LogUtil.e("flow","uid="+appProcessInfo.uid+" appName="+appName+" flows=");
 

@@ -3,6 +3,7 @@ package com.pax.ipp.tools.ui.view;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
 
 import com.pax.ipp.tools.R;

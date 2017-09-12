@@ -1,12 +1,17 @@
 package com.pax.ipp.tools.ui;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.renderscript.RenderScript;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -21,12 +26,17 @@ import com.pax.ipp.tools.adapter.CacheListAdapter;
 import com.pax.ipp.tools.event.ClearMeoryEvent;
 import com.pax.ipp.tools.mvp.presenter.RubbishCleanPresenter;
 import com.pax.ipp.tools.ui.base.RubbishActivity;
+import com.pax.ipp.tools.ui.view.LoadingView;
 import com.pax.ipp.tools.ui.view.Loading_view;
 import com.pax.ipp.tools.utils.AppUtils;
 import com.pax.ipp.tools.utils.BtnUtils;
 import com.pax.ipp.tools.utils.LogUtil;
 import com.pax.ipp.tools.utils.TextFormater;
 import com.pax.ipp.tools.utils.ToastUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -75,6 +85,14 @@ public class MeoryClearActivity extends RubbishActivity {
 
     Loading_view loading_view;
 
+    private Dialog load_dialog;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
+
     @Override
     public int getLayoutId() {
         return R.layout.meory_clear;
@@ -82,6 +100,9 @@ public class MeoryClearActivity extends RubbishActivity {
 
     @Override
     public void initView(Bundle savedInstanceState) {
+
+        EventBus.getDefault().register(this);
+
         toolbar_title.setText(getString(R.string.text_clear_memery));
         setSupportActionBar(toolbar);
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
@@ -90,7 +111,10 @@ public class MeoryClearActivity extends RubbishActivity {
             actionBar.setDisplayShowTitleEnabled(false);
         }
 
+
+
         loading_view = new Loading_view(mContext,R.style.CustomDialog);
+
 
         checbox_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -103,11 +127,16 @@ public class MeoryClearActivity extends RubbishActivity {
         mRubbishCleanPresenter.attachView(this);
         mRubbishCleanPresenter.onCreate(savedInstanceState);
         loading_view.show();
+
+//        showMyDialog();
+
+//        btn_lear_meory.setOnClickListener(new onLister());
     }
 
     @Override public void onDestroy() {
         super.onDestroy();
         mRubbishCleanPresenter.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -130,14 +159,46 @@ public class MeoryClearActivity extends RubbishActivity {
         switch (view.getId()){
             case R.id.btn_lear_meory://一键清理
                 if (BtnUtils.isFastDoubleClick()){
-                    loading_view.show();
-                    btn_lear_meory.setText("清理中...");
-                    btn_lear_meory.setEnabled(false);
-                    mRubbishCleanPresenter.cleanMemory();
+                    setClearMeory("");
+//                    EventBus.getDefault().post(new String());
 //                    setResult(RESULT_OK);
 //                    finish();
                 }
                 break;
+        }
+    }
+
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void setClearMeory(String text){
+        LogUtil.e("clear-","message ");
+
+//        loading_view.show();
+
+        btn_lear_meory.setText("清理中...");
+        btn_lear_meory.setEnabled(false);
+        mRubbishCleanPresenter.cleanMemory();
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDismDialog(String t){
+        LogUtil.e("clear-","onDismDialog ");
+        handler.postAtTime(new Runnable() {
+            @Override
+            public void run() {
+                loading_view.show();
+            }
+        }, 200);
+    }
+
+    class onLister implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            LogUtil.e("clear-","message ");
+            loading_view.show();
+//            showMyDialog();
+            btn_lear_meory.setText("清理中...");
+            btn_lear_meory.setEnabled(false);
+            mRubbishCleanPresenter.cleanMemory();
         }
     }
 
@@ -189,7 +250,9 @@ public class MeoryClearActivity extends RubbishActivity {
 
     @Override
     public void onScanCompleted() {
+        LogUtil.e("clear-","message  onScanCompleted");
         loading_view.dismiss();
+//        closeDialog();
         btn_lear_meory.setEnabled(true);
         long sum = AppUtils.getTotalMemory();
         long available = AppUtils.getAvailMemory(mContext);
@@ -220,7 +283,9 @@ public class MeoryClearActivity extends RubbishActivity {
 
     @Override
     public void showSnackbar(String message) {
+        LogUtil.e("clear-","message  showSnackbar");
         loading_view.dismiss();
+//        closeDialog();
         checbox_all.setChecked(false);
         btn_lear_meory.setText("一键清理");
         btn_lear_meory.setEnabled(true);
@@ -253,9 +318,13 @@ public class MeoryClearActivity extends RubbishActivity {
         recyclerAdapter.notifyDataSetChanged();
     }
 
+    @Subscribe(threadMode =ThreadMode.MAIN,sticky = true)
+    public void onMeoryMethod(ClearMeoryEvent event) {
 
-    public void onEventMainThread(ClearMeoryEvent event) {
+        LogUtil.e("onEvent=","Meory clear activity");
         btn_lear_meory.setEnabled(true);
+        loading_view.dismiss();
+//        closeDialog();
         long temp = 0;
         if (cacheSizs-event.getMeorySize()>=0){
             temp=cacheSizs-event.getMeorySize();
@@ -268,6 +337,40 @@ public class MeoryClearActivity extends RubbishActivity {
         tv_meory_total.setText(TextFormater.dataSizeFormat(sum - available) + "/" +
                 TextFormater.dataSizeFormat(sum));//可用内存/总内存
 
+
+    }
+    private Handler handler=new Handler();
+    private void showMyDialog() {
+        load_dialog = new Dialog(this, R.style.loadingDialogTheme);
+        load_dialog.setContentView(new LoadingView(this));
+        load_dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    return true;
+                }
+                return false;
+            }
+        });
+        handler.postAtTime(new Runnable() {
+            @Override
+            public void run() {
+                load_dialog.show();
+            }
+        },100);
+
     }
 
-}
+    private void closeDialog() {
+        if (null != load_dialog) {
+            if (load_dialog.isShowing()) {
+                handler.postAtTime(new Runnable() {
+                    @Override
+                    public void run() {
+                        load_dialog.dismiss();
+                    }
+                }, 300);
+            }
+        }
+    }}

@@ -163,7 +163,7 @@ public class FlowFragment extends BaseFragment {
                     model.setmPackageName(packName);
                     model.setmApplicationName(appName);
 
-                    long flows= FlowUtil.getInstance().getTodayBytesByUid(mContext,appProcessInfo.uid);
+                    long flows= FlowUtil.getInstance().getTodayBytesByUid(mContext,appProcessInfo.uid,packName);
 //                   long flows= FlowUtil.getBytesByUid(mContext,appProcessInfo.uid,
 //                            FlowUtil.getTimesMonthMorning(),System.currentTimeMillis());
                     LogUtil.e("flow","uid="+appProcessInfo.uid+" appName="+appName+" flows="+ flows);
@@ -268,7 +268,6 @@ public class FlowFragment extends BaseFragment {
                             try {
                                 appInfo = packageManager.getApplicationInfo(
                                         appProcessInfo.processName, 0);
-
 //                                if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
 //                                    abAppProcessInfo.isSystem = true;
 //                                } else {
@@ -284,9 +283,9 @@ public class FlowFragment extends BaseFragment {
 
                                 long flows = 0;
                                 if (getArguments().getBoolean(FLAG_TIME)){//今日
-                                    flows = FlowUtil.getInstance().getTodayBytesByUid(mContext,appProcessInfo.uid);
+                                    flows = FlowUtil.getInstance().getTodayBytesByUid(mContext,appProcessInfo.uid,packName);
                                 }else {//月
-                                    flows = FlowUtil.getInstance().getMonthBytesByUid(mContext,appProcessInfo.uid);
+                                    flows = FlowUtil.getInstance().getMonthBytesByUid(mContext,appProcessInfo.uid,packName);
                                 }
                                 LogUtil.e("flow", "uid=" + appProcessInfo.uid + " appName=" + appName + " flows=" + flows);
                                 model.setFlowSize(flows);

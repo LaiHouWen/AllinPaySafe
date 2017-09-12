@@ -50,7 +50,7 @@ public class GsonUtil {
         String jsonStr = gson.toJson(map);
         return jsonStr;
     }
-    public static String mapToJsonIntegerString(Map<Integer, Map<String,Long>> map) {
+    public static String mapToJsonIntegerString(Map<String, Map<String,Long>> map) {
         Gson gson = new Gson();
         String jsonStr = gson.toJson(map);
         return jsonStr;

@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Canvas;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.UiThread;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.format.Formatter;
@@ -16,6 +18,7 @@ import com.pax.ipp.tools.R;
 import com.pax.ipp.tools.adapter.CacheListAdapter;
 import com.pax.ipp.tools.adapter.base.BaseRecyclerViewAdapter;
 import com.pax.ipp.tools.event.ClearMeoryEvent;
+import com.pax.ipp.tools.event.MeoryClearEvent;
 import com.pax.ipp.tools.model.CacheListItem;
 import com.pax.ipp.tools.mvp.impl.Presenter;
 import com.pax.ipp.tools.mvp.impl.RubbishCleanView;
@@ -27,6 +30,7 @@ import com.pax.ipp.tools.utils.TextFormater;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +50,9 @@ public class RubbishCleanPresenter implements Presenter,
     private final Context mContext;
     List<CacheListItem> mCacheListItems = new ArrayList<>();
     CacheListAdapter recyclerAdapter;
+
+    long killAppmemory = 0;
+    long count = 0;
 
     public RubbishCleanPresenter(Context mContext) {
         this.mContext = mContext;
@@ -248,30 +255,87 @@ public class RubbishCleanPresenter implements Presenter,
      * 清除选中的app
      */
     public void cleanMemory() {
-        long killAppmemory = 0;
-        long count = 0;
-        List<CacheListItem> listItems =new ArrayList<CacheListItem>();
-        for (int i = mCacheListItems.size() - 1; i >= 0; i--) {
-            long memory = mCacheListItems.get(i).getCacheSize();
-            if (mCacheListItems.get(i).getIsChoise()) {
-                count++;
-                killAppmemory += memory;
-                mCleanerService.killBackgroundProcesses(
-                        mCacheListItems.get(i).getPackageName());
-                //mAppProcessInfos.remove(mAppProcessInfos.get(i));
-                //mClearMemoryAdapter.notifyDataSetChanged();
-                listItems.add(mCacheListItems.get(i));
-                recyclerAdapter.remove(mCacheListItems.get(i));
-            }
-        }
-        mCacheListItems.removeAll(listItems);
-//        mRubbishClean.updateBadge(0);
-//        mRubbishClean.updateTitle(mContext, 0);
-        EventBus.getDefault().post(new ClearMeoryEvent(killAppmemory));
-        mRubbishClean.showSnackbar(count > 0 ? "共清理" + count + "个进程,共占内存" +
-                TextFormater.dataSizeFormat(killAppmemory) +
-                "内存" : "未选中要清理的进程");
 
+
+        new clearApp().execute();
+
+//
+//                long killAppmemory = 0;
+//                long count = 0;
+//                List<CacheListItem> listItems =new ArrayList<CacheListItem>();
+//                for (int i = mCacheListItems.size() - 1; i >= 0; i--) {
+//                    long memory = mCacheListItems.get(i).getCacheSize();
+//                    if (mCacheListItems.get(i).getIsChoise()) {
+//                        EventBus.getDefault().post(new String("t"));
+//                        count++;
+//                        killAppmemory += memory;
+//                        mCleanerService.killBackgroundProcesses(
+//                                mCacheListItems.get(i).getPackageName());
+//                        //mAppProcessInfos.remove(mAppProcessInfos.get(i));
+//                        //mClearMemoryAdapter.notifyDataSetChanged();
+//                        listItems.add(mCacheListItems.get(i));
+//                        recyclerAdapter.remove(mCacheListItems.get(i));
+//                    }
+//                }
+//                mCacheListItems.removeAll(listItems);
+//
+////        mRubbishClean.updateBadge(0);
+////        mRubbishClean.updateTitle(mContext, 0);
+//        EventBus.getDefault().postSticky(new ClearMeoryEvent(killAppmemory,""));
+//        if (count>0)
+//        EventBus.getDefault().post(new MeoryClearEvent());
+//
+//        mRubbishClean.showSnackbar(count > 0 ? "共清理" + count + "个进程,共占内存" +
+//                TextFormater.dataSizeFormat(killAppmemory) +
+//                "内存" : "未选中要清理的进程");
+    }
+
+   private class clearApp extends AsyncTask<Void,Void,List<CacheListItem>>{
+
+       @Override
+       protected void onPreExecute() {
+           super.onPreExecute();
+           EventBus.getDefault().post(new String("t"));
+       }
+
+       @Override
+       protected List<CacheListItem> doInBackground(Void... params) {
+           List<CacheListItem> listItems =new ArrayList<CacheListItem>();
+           for (int i = mCacheListItems.size() - 1; i >= 0; i--) {
+               long memory = mCacheListItems.get(i).getCacheSize();
+               if (mCacheListItems.get(i).getIsChoise()) {
+//                   EventBus.getDefault().post(new String("t"));
+                   count++;
+                   killAppmemory += memory;
+                   mCleanerService.killBackgroundProcesses(
+                           mCacheListItems.get(i).getPackageName());
+                   //mAppProcessInfos.remove(mAppProcessInfos.get(i));
+                   //mClearMemoryAdapter.notifyDataSetChanged();
+                   listItems.add(mCacheListItems.get(i));
+//                   recyclerAdapter.remove(mCacheListItems.get(i));
+               }
+           }
+
+           return listItems;
+       }
+
+       @Override
+        protected void onPostExecute(List<CacheListItem> cacheListItems) {
+           if (cacheListItems!=null){
+               for (int i=0;i<cacheListItems.size();i++){
+                   recyclerAdapter.remove(cacheListItems.get(i));
+               }
+           }
+           mCacheListItems.removeAll(cacheListItems);
+           EventBus.getDefault().postSticky(new ClearMeoryEvent(killAppmemory,""));
+           if (count>0)
+               EventBus.getDefault().post(new MeoryClearEvent());
+
+           mRubbishClean.showSnackbar(count > 0 ? "共清理" + count + "个进程,共占内存" +
+                   TextFormater.dataSizeFormat(killAppmemory) +
+                   "内存" : "未选中要清理的进程");
+
+        }
     }
 
 }

@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import com.pax.ipp.tools.utils.LogUtil;
 
+import org.greenrobot.eventbus.EventBus;
+
 import butterknife.ButterKnife;
 
 /**
@@ -29,6 +31,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         this.setContentView(this.getLayoutId());
 
         ButterKnife.bind(this);
+
+//        EventBus.getDefault().register(this);
 
         mContext = this;
 //        mPresenter = TUtil.getT(this, 0);

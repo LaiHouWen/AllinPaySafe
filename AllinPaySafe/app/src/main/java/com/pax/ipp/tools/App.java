@@ -3,12 +3,19 @@ package com.pax.ipp.tools;
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.os.SystemClock;
+import android.util.Log;
+import android.view.View;
 
 import com.pax.ipp.tools.model.BaseFlowModel;
 import com.pax.ipp.tools.model.FlowModel;
+import com.pax.ipp.tools.service.AppFlowService;
 import com.pax.ipp.tools.service.RequestAlarmReceiver;
 import com.pax.ipp.tools.service.SaveFlowService;
 import com.pax.ipp.tools.utils.DateUtil;
@@ -46,6 +53,7 @@ public class App extends Application {
                 putExtra(Constant.TIME_TEMP, DateUtil.getToday()));
 
         setAlarmTime(this);
+        bindService();
     }
 
     private static final int INTERVAL = 1000 * 60 * 60 * 24;// 24h
@@ -78,4 +86,27 @@ public class App extends Application {
 
     }
 
+    private AppFlowManager appFlowManager;
+    public void bindService() {
+        Intent intent = new Intent(this, AppFlowService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.e("aidl", "绑定开始");
+            appFlowManager = AppFlowManager.Stub.asInterface(service);
+//            try {
+
+//                bookManager.registerListener(mOnNewBookArrivedListener);
+//            } catch (RemoteException e) {
+//                e.printStackTrace();
+//            }
+        }
+
+        @Override public void onServiceDisconnected(ComponentName name) {
+            appFlowManager=null;
+            Log.e("aidl", "绑定结束");
+        }
+    };
 }

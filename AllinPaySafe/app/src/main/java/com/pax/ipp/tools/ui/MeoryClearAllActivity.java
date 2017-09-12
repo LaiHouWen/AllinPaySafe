@@ -18,9 +18,17 @@ import android.widget.Toast;
 import com.pax.ipp.tools.Constant;
 import com.pax.ipp.tools.R;
 import com.pax.ipp.tools.adapter.CacheListAdapter;
+import com.pax.ipp.tools.event.ClearMeoryEvent;
+import com.pax.ipp.tools.event.MeoryClearEvent;
 import com.pax.ipp.tools.mvp.presenter.RubbishCleanPresenter;
 import com.pax.ipp.tools.ui.base.RubbishActivity;
+import com.pax.ipp.tools.utils.AppUtils;
+import com.pax.ipp.tools.utils.LogUtil;
 import com.pax.ipp.tools.utils.TextFormater;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.IOException;
 
@@ -83,12 +91,20 @@ public class MeoryClearAllActivity extends RubbishActivity {
     long cacheSizes= 0;
 
     @Override
+    protected void onStart() {
+        super.onStart();
+//
+    }
+
+    @Override
     public int getLayoutId() {
         return R.layout.meory_clear_all;
     }
 
     @Override
     public void initView(Bundle savedInstanceState) {
+        EventBus.getDefault().register(this);
+
         toolbar_title.setText(getString(R.string.text_clear_memery));
         setSupportActionBar(toolbar);
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
@@ -96,6 +112,8 @@ public class MeoryClearAllActivity extends RubbishActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
         }
+
+
 
         flag_0 = false;
         flag_1 = false;
@@ -112,6 +130,8 @@ public class MeoryClearAllActivity extends RubbishActivity {
         mRubbishCleanPresenter = new RubbishCleanPresenter(this);
         mRubbishCleanPresenter.attachView(this);
         mRubbishCleanPresenter.onCreate(savedInstanceState);
+
+        btn_one_cler.setVisibility(View.GONE);
 
     }
 
@@ -216,6 +236,7 @@ public class MeoryClearAllActivity extends RubbishActivity {
     @Override public void onDestroy() {
         super.onDestroy();
         mRubbishCleanPresenter.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
     @Override
     public void initViews(CacheListAdapter recyclerAdapter, Context context, ItemTouchHelper itemTouchHelper) {
@@ -224,6 +245,7 @@ public class MeoryClearAllActivity extends RubbishActivity {
 
     @Override
     public void onScanStarted(Context context) {
+        btn_one_cler.setVisibility(View.INVISIBLE);
 //        setGifImageview(gif_0);
         try {
             GifDrawable gifDrawable = new GifDrawable(mContext.getAssets(),gif_0);
@@ -249,6 +271,7 @@ public class MeoryClearAllActivity extends RubbishActivity {
     @Override
     public void onScanProgressUpdated(Context context, int current, int max, long cacheSize, String packageName) {
         cacheSizes = cacheSize;
+        btn_one_cler.setVisibility(View.GONE);
         btn_one_cler.setEnabled(false);
         tv_ariable_meory_c.setText(TextFormater.dataSizeFormatArray(cacheSize)[0]);
         tv_ariable_c.setText(TextFormater.dataSizeFormatArray(cacheSize)[1]);
@@ -256,6 +279,7 @@ public class MeoryClearAllActivity extends RubbishActivity {
 
     @Override
     public void onScanCompleted() {
+        btn_one_cler.setVisibility(View.VISIBLE);
         btn_one_cler.setEnabled(true);
     }
 
@@ -312,5 +336,28 @@ public class MeoryClearAllActivity extends RubbishActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMeoryClearEvent(MeoryClearEvent event) {
+        LogUtil.e("onEvent=","onMeoryClearEvent");
+
+        GifDrawable gifDrawable_3 = null;
+        try {
+            gifDrawable_3 = new GifDrawable(mContext.getAssets(),gif_3);
+            gifImageview.setImageDrawable(gifDrawable_3);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        tv_ariable_meory_c.setText(TextFormater.dataSizeFormatArray(cacheSizes)[0]);
+        tv_ariable_c.setText(TextFormater.dataSizeFormatArray(cacheSizes)[1]);
+        tv_ariable_meory_c.setVisibility(View.VISIBLE);
+        tv_ariable_c.setVisibility(View.VISIBLE);
+        tv_clear_over.setVisibility(View.VISIBLE);
+
+        btn_look_detail.setVisibility(View.GONE);
+        btn_one_cler.setVisibility(View.VISIBLE);
+        btn_one_cler.setText(text_temp);
     }
 }

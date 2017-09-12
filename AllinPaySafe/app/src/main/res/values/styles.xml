@@ -82,5 +82,18 @@
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
+    <!-- 重写系统弹出Dialog -->
+    <style name="loadingDialogTheme" parent="android:Theme.Dialog">
+        <!-- 设置对话框的背景 -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <!--         <item name="android:backgroundDimEnabled">true</item> -->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">false</item>
+        <!-- 点击对话框外面消失对话框 -->
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <!-- 除去背景色 -->
+    </style>
 
 </resources>
