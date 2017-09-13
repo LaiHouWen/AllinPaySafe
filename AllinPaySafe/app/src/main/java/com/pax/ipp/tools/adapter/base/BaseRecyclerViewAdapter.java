@@ -29,6 +29,10 @@ public abstract class BaseRecyclerViewAdapter<E>
 
     private boolean isFirstOnly = true;
 
+    public int itemType_item=1;
+    public int itemType_empty=2;
+    public int itemType=itemType_item;
+
     protected List<E> list;
     private Map<Integer, onInternalClickListener<E>> canClickItem;
 
@@ -120,7 +124,11 @@ public abstract class BaseRecyclerViewAdapter<E>
 
 
     @Override public int getItemViewType(int position) {
-        return 1;
+        if (list==null||list.size()==0){
+            itemType=itemType_empty;
+        }
+        itemType=itemType_item;
+        return itemType;
     }
 
 

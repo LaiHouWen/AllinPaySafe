@@ -6,21 +6,37 @@
 
     <include layout="@layout/view_title" />
 
-<ImageView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center_horizontal"
-    android:layout_marginTop="75dp"
-    android:src="@mipmap/icon_zhanwei"/>
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="108dp"
+        android:layout_height="108dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="75dp"
+        android:src="@mipmap/icon_288" />
 
-<Button
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center_horizontal"
-    android:layout_marginTop="28dp"
-    android:textColor="@color/blue_1fa2"
-    android:text="@string/text_version_update"
-    android:background="@drawable/shap_blue_round"/>
+    <TextView
+        android:id="@+id/tv_version_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_gravity="center"
+        android:textColor="@color/black_6666"
+        android:textSize="15sp"
+        android:text="V"/>
+
+    <Button
+        android:id="@+id/btn_updata"
+        android:layout_width="wrap_content"
+        android:layout_height="42dp"
+        android:layout_gravity="center_horizontal"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:layout_marginTop="28dp"
+        android:gravity="center"
+        android:background="@drawable/shap_blue_round"
+        android:text="@string/text_version_update"
+        android:textColor="@color/blue_1fa2"
+        android:visibility="visible" />
 
 
     <TextView

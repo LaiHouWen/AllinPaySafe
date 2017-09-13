@@ -28,5 +28,6 @@
 
     <string name="text_copy_reserver">Copyriht &#169; 2017 Pax.All Rights Reserver</string>
 
+    <string name="text_empty_flow">当前无应用消耗流量！</string>
 
 </resources>

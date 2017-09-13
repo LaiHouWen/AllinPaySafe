@@ -24,11 +24,14 @@ import android.widget.Toast;
 import com.pax.ipp.tools.R;
 import com.pax.ipp.tools.model.AppProcessInfo;
 import com.pax.ipp.tools.model.CacheListItem;
+import com.pax.ipp.tools.model.FlowModel;
 import com.pax.ipp.tools.utils.LogUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -78,7 +81,7 @@ public class CleanerService extends Service {
     private CleanerServiceBinder mBinder = new CleanerServiceBinder();
 
     /**
-     * 扫描
+     * 扫描 内存
      */
     private class TaskScan
             extends AsyncTask<Void, Object, List<CacheListItem>> {
@@ -121,14 +124,11 @@ public class CleanerService extends Service {
                                 public void onGetStatsCompleted(PackageStats pStats, boolean succeeded)
                                         throws RemoteException {
                                     synchronized (apps) {
-
                                         //publishProgress(++mAppCount,
                                         //        packages.size());
 
-
                                         if (succeeded && pStats.cacheSize > 0) {
                                             try {
-
                                                 apps.add(new CacheListItem(
                                                         pStats.packageName,
                                                         getPackageManager().getApplicationLabel(
@@ -190,6 +190,15 @@ public class CleanerService extends Service {
         protected void onPostExecute(List<CacheListItem> result) {
             mIsScanning = false;
             if (mOnActionListener != null) {
+                // 排序
+                Collections.sort(result,
+                        new Comparator<CacheListItem>() {
+                            @Override
+                            public int compare(CacheListItem o1, CacheListItem o2) {
+                                return new Double(o1.getCacheSize()).compareTo(new Double(o2.getCacheSize()));
+                            }}
+                );
+                Collections.reverse(result);
                 mOnActionListener.onScanCompleted(CleanerService.this, result);
             }
         }
@@ -295,6 +304,33 @@ public class CleanerService extends Service {
 
         if (action != null) {
             if (action.equals(ACTION_CLEAN_AND_EXIT)) {
+                setOnActionListener(new OnActionListener() {
+                    @Override
+                    public void onScanStarted(Context context) {
+
+                    }
+
+                    @Override
+                    public void onScanProgressUpdated(Context context, int current, int max, long cacheSize, String packageName) {
+
+                    }
+
+                    @Override
+                    public void onScanCompleted(Context context, List<CacheListItem> apps) {
+
+                    }
+
+                    @Override
+                    public void onCleanStarted(Context context) {
+
+                    }
+
+                    @Override
+                    public void onCleanCompleted(Context context, long cacheSize) {
+
+                    }
+                });
+
 //                setOnActionListener(new OnActionListener() {
 //                    @Override
 //                    public void onScanStarted(Context context) {
@@ -356,7 +392,6 @@ public class CleanerService extends Service {
 
     public void scanCache() {
         mIsScanning = true;
-
         new TaskScan().execute();
     }
 
@@ -473,6 +508,7 @@ public class CleanerService extends Service {
         @Override protected void onPostExecute(Long result) {
             mIsCleaning=false;
             mIsScanning=false;
+
             if (mOnActionListener != null) {
                 mOnActionListener.onCleanCompleted(CleanerService.this, result);
             }

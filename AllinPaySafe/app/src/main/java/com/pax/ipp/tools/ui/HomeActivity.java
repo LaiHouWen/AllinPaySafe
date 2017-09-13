@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
+import com.pax.ipp.tools.AppManager;
 import com.pax.ipp.tools.Constant;
 import com.pax.ipp.tools.R;
 import com.pax.ipp.tools.mvp.impl.CircularLoaderView;
@@ -99,10 +100,8 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
 
     @Override
     public void initView(Bundle savedInstanceState) {
-
+        AppManager.getAppManager().addActivity(this);
         cirLoaders.setProgress(0);
-
-
 
         cirPresenter =new CircularLoaderPresenter(this);
         cirPresenter.attachView(this);
@@ -136,6 +135,7 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        AppManager.getAppManager().finishAllActivity();
         FlowUtil.getInstance().saveFlowDate(mContext,DateUtil.getToday());//保存总流量
         FlowUtil.getInstance().saveFlowUidBytes(mContext);
         cirPresenter.onDestroy();
@@ -208,6 +208,7 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
         }
         //创建弹出式菜单对象（最低版本11）
         popup = new PopupMenu(this, imgbtn_about);//第二个参数是绑定的那个view
+        
         //获取菜单填充器
         MenuInflater inflater = popup.getMenuInflater();
         //填充菜单
@@ -257,7 +258,13 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
         //流量使用情况
 //        tv_today_useing_d.setText("0MB");//今日消耗的流量
 //        tv_month_useing_d.setText("0MB");//本月的总流量
-
+        //流量使用情况
+        if (Constant.flowTodayMonth!=null&&Constant.flowTodayMonth.containsKey(DateUtil.getToday())) {
+            long flowToday = FlowUtil.getInstance().getTodayBytes(this);
+            tv_today_useing_d.setText(TextFormater.dataSizeFormat(flowToday));//今日消耗的流量
+            long flowMonth = FlowUtil.getInstance().getMonthBytes(this);
+            tv_month_useing_d.setText(TextFormater.dataSizeFormat(flowMonth));//本月的总流量
+        }
     }
 
     @Override

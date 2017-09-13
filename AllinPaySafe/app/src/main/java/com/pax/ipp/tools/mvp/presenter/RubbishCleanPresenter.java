@@ -12,11 +12,14 @@ import android.os.IBinder;
 import android.support.annotation.UiThread;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.TextUtils;
 import android.text.format.Formatter;
 
+import com.pax.ipp.tools.Constant;
 import com.pax.ipp.tools.R;
 import com.pax.ipp.tools.adapter.CacheListAdapter;
 import com.pax.ipp.tools.adapter.base.BaseRecyclerViewAdapter;
+import com.pax.ipp.tools.event.ClearChoiseAllEvent;
 import com.pax.ipp.tools.event.ClearMeoryEvent;
 import com.pax.ipp.tools.event.MeoryClearEvent;
 import com.pax.ipp.tools.model.CacheListItem;
@@ -29,6 +32,8 @@ import com.pax.ipp.tools.utils.LogUtil;
 import com.pax.ipp.tools.utils.TextFormater;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -48,11 +53,13 @@ public class RubbishCleanPresenter implements Presenter,
 
     private boolean mAlreadyScanned = false;
     private final Context mContext;
-    List<CacheListItem> mCacheListItems = new ArrayList<>();
-    CacheListAdapter recyclerAdapter;
+    public List<CacheListItem> mCacheListItems = new ArrayList<>();
+    public CacheListAdapter recyclerAdapter;
 
     long killAppmemory = 0;
-    long count = 0;
+    int count = 0;
+
+    private boolean flagConnection=false;
 
     public RubbishCleanPresenter(Context mContext) {
         this.mContext = mContext;
@@ -65,26 +72,28 @@ public class RubbishCleanPresenter implements Presenter,
             mCleanerService
                     = ((CleanerService.CleanerServiceBinder) service).getService();
             mCleanerService.setOnActionListener(RubbishCleanPresenter.this);
-
+            flagConnection=true;
 //              updateStorageUsage();
 
+            //绑定service 扫描内存
             if (!mCleanerService.isScanning() && !mAlreadyScanned) {
                 mCleanerService.scanCache();
             }
         }
 
-
         @Override public void onServiceDisconnected(ComponentName name) {
             mCleanerService.setOnActionListener(null);
             mCleanerService = null;
+            flagConnection=false;
         }
     };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
-        initViews();
+        initBindService();
     }
+
+
     public void initViews() {
 
         //0则不执行拖动或者滑动
@@ -144,14 +153,19 @@ public class RubbishCleanPresenter implements Presenter,
         recyclerAdapter.setDuration(300);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(mCallback);
 
-        mContext.bindService(new Intent(mContext, CleanerService.class),
-                mServiceConnection, Context.BIND_AUTO_CREATE);
 
         mRubbishClean.initViews(recyclerAdapter, mContext, itemTouchHelper);
 
 //        mRubbishClean.initViews(recyclerAdapter, mContext, itemTouchHelper);
 
     }
+
+
+    public void initBindService(){
+        mContext.bindService(new Intent(mContext, CleanerService.class),
+                mServiceConnection, Context.BIND_AUTO_CREATE);
+    }
+
     @Override
     public void onResume() {
 
@@ -173,14 +187,14 @@ public class RubbishCleanPresenter implements Presenter,
     }
 
     @Override public void onDestroy() {
+        if (flagConnection)
         mContext.unbindService(mServiceConnection);
-        //RefWatcher refWatcher = App.getRefWatcher(mContext);
-        //refWatcher.watch(this);
+
     }
 
     @Override
     public void attachView(View v) {
-        mRubbishClean = (RubbishActivity) v;
+        mRubbishClean =  (RubbishActivity)v;
     }
 
     @Override
@@ -206,6 +220,7 @@ public class RubbishCleanPresenter implements Presenter,
     public void onScanCompleted(Context context, List<CacheListItem> apps) {
         mCacheListItems.clear();
         mCacheListItems.addAll(apps);
+        if (recyclerAdapter!=null)
         recyclerAdapter.notifyDataSetChanged();
         mRubbishClean.onScanCompleted();
         mRubbishClean.stopRefresh();
@@ -253,11 +268,12 @@ public class RubbishCleanPresenter implements Presenter,
     /**
      *
      * 清除选中的app
+     * type  all
+     *
      */
-    public void cleanMemory() {
+    public void cleanMemory(String type) {
 
-
-        new clearApp().execute();
+        new clearApp().execute(type);
 
 //
 //                long killAppmemory = 0;
@@ -290,7 +306,10 @@ public class RubbishCleanPresenter implements Presenter,
 //                "内存" : "未选中要清理的进程");
     }
 
-   private class clearApp extends AsyncTask<Void,Void,List<CacheListItem>>{
+    /**
+     * 清理选中的apps
+     */
+   private class clearApp extends AsyncTask<String,Void,List<CacheListItem>>{
 
        @Override
        protected void onPreExecute() {
@@ -299,43 +318,68 @@ public class RubbishCleanPresenter implements Presenter,
        }
 
        @Override
-       protected List<CacheListItem> doInBackground(Void... params) {
+       protected List<CacheListItem> doInBackground(String... params) {
            List<CacheListItem> listItems =new ArrayList<CacheListItem>();
+           String type = params[0];
            for (int i = mCacheListItems.size() - 1; i >= 0; i--) {
                long memory = mCacheListItems.get(i).getCacheSize();
-               if (mCacheListItems.get(i).getIsChoise()) {
-//                   EventBus.getDefault().post(new String("t"));
+               if ((!TextUtils.isEmpty(type)&&type.equals(Constant.TYPE_CLEARN_MEORY_ALL))
+                       ||mCacheListItems.get(i).getIsChoise()) {
                    count++;
                    killAppmemory += memory;
                    mCleanerService.killBackgroundProcesses(
                            mCacheListItems.get(i).getPackageName());
-                   //mAppProcessInfos.remove(mAppProcessInfos.get(i));
-                   //mClearMemoryAdapter.notifyDataSetChanged();
                    listItems.add(mCacheListItems.get(i));
-//                   recyclerAdapter.remove(mCacheListItems.get(i));
                }
            }
-
+           EventBus.getDefault().post(new ClearChoiseAllEvent(type,listItems,killAppmemory,count));
            return listItems;
        }
 
        @Override
         protected void onPostExecute(List<CacheListItem> cacheListItems) {
-           if (cacheListItems!=null){
+           if (recyclerAdapter!=null&&cacheListItems!=null){
                for (int i=0;i<cacheListItems.size();i++){
                    recyclerAdapter.remove(cacheListItems.get(i));
                }
+               mCacheListItems.removeAll(cacheListItems);
+               recyclerAdapter.notifyDataSetChanged();
            }
-           mCacheListItems.removeAll(cacheListItems);
-           EventBus.getDefault().postSticky(new ClearMeoryEvent(killAppmemory,""));
+            //MeoryClearActivity.class
+           EventBus.getDefault().postSticky(new ClearMeoryEvent(killAppmemory,count > 0 ? "共清理" + count + "个进程,共占内存" +
+                   TextFormater.dataSizeFormat(killAppmemory) +
+                   "内存" : "未选中要清理的进程"));
            if (count>0)
-               EventBus.getDefault().post(new MeoryClearEvent());
-
+               EventBus.getDefault().post(new MeoryClearEvent(killAppmemory));
+//
            mRubbishClean.showSnackbar(count > 0 ? "共清理" + count + "个进程,共占内存" +
                    TextFormater.dataSizeFormat(killAppmemory) +
                    "内存" : "未选中要清理的进程");
 
         }
     }
+
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onMeoryEvent(ClearChoiseAllEvent event){
+//        if (event==null)return;
+//        LogUtil.e("eventbus",event.toString());
+//        if (event.getType().equals(Constant.TYPE_CLEARN_MEORY_ALL)){
+//            mRubbishClean.showSnackbar(event.getCount() > 0 ? "共清理" + event.getCount() + "个进程,共占内存" +
+//                    TextFormater.dataSizeFormat(event.getMemorySize()) +
+//                    "内存" : "未选中要清理的进程");
+//            EventBus.getDefault().post(new Long(event.getMemorySize()));
+//        }else {//列表
+//            if (recyclerAdapter!=null&&event.getList()!=null){
+//                for (int i=0;i<event.getList().size();i++){
+//                    recyclerAdapter.remove(event.getList().get(i));
+//                }
+//                mCacheListItems.removeAll(event.getList());
+//                recyclerAdapter.notifyDataSetChanged();
+//            }
+//            mRubbishClean.showSnackbar(event.getCount() > 0 ? "共清理" + event.getCount() + "个进程,共占内存" +
+//                    TextFormater.dataSizeFormat(event.getMemorySize()) +
+//                    "内存" : "未选中要清理的进程");
+//        }
+//    }
 
 }

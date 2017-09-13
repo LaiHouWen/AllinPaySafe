@@ -3,26 +3,23 @@ package com.pax.ipp.tools.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.pax.ipp.tools.AppManager;
 import com.pax.ipp.tools.Constant;
 import com.pax.ipp.tools.R;
 import com.pax.ipp.tools.adapter.CacheListAdapter;
-import com.pax.ipp.tools.event.ClearMeoryEvent;
+import com.pax.ipp.tools.event.ClearChoiseAllEvent;
 import com.pax.ipp.tools.event.MeoryClearEvent;
+import com.pax.ipp.tools.event.PresenterEvent;
 import com.pax.ipp.tools.mvp.presenter.RubbishCleanPresenter;
 import com.pax.ipp.tools.ui.base.RubbishActivity;
-import com.pax.ipp.tools.utils.AppUtils;
 import com.pax.ipp.tools.utils.LogUtil;
 import com.pax.ipp.tools.utils.TextFormater;
 
@@ -42,6 +39,7 @@ import pl.droidsonroids.gif.GifImageView;
  * Created by houwen.lai on 2017/9/5.
  * 内存清理动画
  *  BaseActivity implements RubbishCleanView
+ *
  */
 
 public class MeoryClearAllActivity extends RubbishActivity {
@@ -74,9 +72,6 @@ public class MeoryClearAllActivity extends RubbishActivity {
     @BindView(R.id.btn_one_cler)
     Button btn_one_cler;
 
-
-    RubbishCleanPresenter mRubbishCleanPresenter;
-
     final String gif_0 ="gi_f_1.gif";
     final String gif_1 ="gi_f_2.gif";
     final String gif_2 ="gi_f_3.gif";
@@ -104,7 +99,7 @@ public class MeoryClearAllActivity extends RubbishActivity {
     @Override
     public void initView(Bundle savedInstanceState) {
         EventBus.getDefault().register(this);
-
+        AppManager.getAppManager().addActivity(this);
         toolbar_title.setText(getString(R.string.text_clear_memery));
         setSupportActionBar(toolbar);
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
@@ -112,8 +107,6 @@ public class MeoryClearAllActivity extends RubbishActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
         }
-
-
 
         flag_0 = false;
         flag_1 = false;
@@ -127,14 +120,77 @@ public class MeoryClearAllActivity extends RubbishActivity {
         btn_look_detail.setVisibility(View.GONE);
         btn_one_cler.setVisibility(View.GONE);
 
+
+        btn_look_detail.setVisibility(View.GONE);
+        btn_one_cler.setVisibility(View.GONE);
+
         mRubbishCleanPresenter = new RubbishCleanPresenter(this);
         mRubbishCleanPresenter.attachView(this);
         mRubbishCleanPresenter.onCreate(savedInstanceState);
-
-        btn_one_cler.setVisibility(View.GONE);
-
     }
 
+
+    @Override
+    public void initPresenter() {
+
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick({R.id.btn_look_detail,R.id.btn_one_cler})
+    public void onClick(View v){
+        switch (v.getId()){
+            case R.id.btn_look_detail://查看详情
+                startActivityForResult(new Intent(mContext,MeoryClearActivity.class), Constant.RequestCode_meory_all);
+            break;
+            case R.id.btn_one_cler://一键清理
+                pressKey();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode== Constant.RequestCode_meory_all&&resultCode==RESULT_OK){
+//            pressKey();
+
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        btn_one_cler.setEnabled(true);
+//        if (mRubbishCleanPresenter!=null)
+//        mRubbishCleanPresenter.scanCache();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        LogUtil.e("event","onStop");
+        if (AppManager.getAppManager().isActivity(MeoryClearActivity.class)){
+            LogUtil.e("event","isActivity");
+            EventBus.getDefault().post(new PresenterEvent(mRubbishCleanPresenter,cacheSizes));
+        }
+    }
+
+    @Override public void onDestroy() {
+        super.onDestroy();
+        mRubbishCleanPresenter.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
     /**
      * final GifDrawable gifDrawable_3 = new GifDrawable(mContext.getAssets(),"gi_f_4.gif");
      * @param path
@@ -184,60 +240,9 @@ public class MeoryClearAllActivity extends RubbishActivity {
             e.printStackTrace();
             btn_one_cler.setEnabled(true);
         }
-        mRubbishCleanPresenter.cleanCache();
+        mRubbishCleanPresenter.cleanMemory(Constant.TYPE_CLEARN_MEORY_ALL);
     }
 
-    @Override
-    public void initPresenter() {
-
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @OnClick({R.id.btn_look_detail,R.id.btn_one_cler})
-    public void onClick(View v){
-        switch (v.getId()){
-            case R.id.btn_look_detail://查看详情
-                startActivityForResult(new Intent(mContext,MeoryClearActivity.class), Constant.RequestCode_meory_all);
-            break;
-            case R.id.btn_one_cler://一键清理
-                pressKey();
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode== Constant.RequestCode_meory_all&&resultCode==RESULT_OK){
-//            pressKey();
-
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        btn_one_cler.setEnabled(true);
-        if (mRubbishCleanPresenter!=null)
-        mRubbishCleanPresenter.scanCache();
-    }
-
-    @Override public void onDestroy() {
-        super.onDestroy();
-        mRubbishCleanPresenter.onDestroy();
-        EventBus.getDefault().unregister(this);
-    }
     @Override
     public void initViews(CacheListAdapter recyclerAdapter, Context context, ItemTouchHelper itemTouchHelper) {
 
@@ -246,6 +251,7 @@ public class MeoryClearAllActivity extends RubbishActivity {
     @Override
     public void onScanStarted(Context context) {
         btn_one_cler.setVisibility(View.INVISIBLE);
+        btn_one_cler.setEnabled(false);
 //        setGifImageview(gif_0);
         try {
             GifDrawable gifDrawable = new GifDrawable(mContext.getAssets(),gif_0);
@@ -257,9 +263,16 @@ public class MeoryClearAllActivity extends RubbishActivity {
                     tv_ariable_c.setVisibility(View.VISIBLE);
                     tv_clear_over.setVisibility(View.GONE);
 
-                    btn_look_detail.setVisibility(View.VISIBLE);
-                    btn_one_cler.setVisibility(View.VISIBLE);
+                    btn_look_detail.setVisibility(View.GONE);
+                    btn_one_cler.setVisibility(View.GONE);
                     flag_0=true;
+
+                    if (!btn_one_cler.isEnabled()){
+                        gifDrawable.reset();
+                    }else {
+                        btn_look_detail.setVisibility(View.VISIBLE);
+                        btn_one_cler.setVisibility(View.VISIBLE);
+                    }
                 }
             });
         } catch (IOException e) {
@@ -270,6 +283,7 @@ public class MeoryClearAllActivity extends RubbishActivity {
 
     @Override
     public void onScanProgressUpdated(Context context, int current, int max, long cacheSize, String packageName) {
+
         cacheSizes = cacheSize;
         btn_one_cler.setVisibility(View.GONE);
         btn_one_cler.setEnabled(false);
@@ -279,6 +293,7 @@ public class MeoryClearAllActivity extends RubbishActivity {
 
     @Override
     public void onScanCompleted() {
+        btn_look_detail.setVisibility(View.VISIBLE);
         btn_one_cler.setVisibility(View.VISIBLE);
         btn_one_cler.setEnabled(true);
     }
@@ -307,8 +322,8 @@ public class MeoryClearAllActivity extends RubbishActivity {
     public void showSnackbar(String message) {
         btn_one_cler.setEnabled(true);
 
-        tv_ariable_meory_c.setText(TextFormater.dataSizeFormatArray(cacheSizes)[0]);
-        tv_ariable_c.setText(TextFormater.dataSizeFormatArray(cacheSizes)[1]);
+//        tv_ariable_meory_c.setText(TextFormater.dataSizeFormatArray(cacheSizes)[0]);
+//        tv_ariable_c.setText(TextFormater.dataSizeFormatArray(cacheSizes)[1]);
 
         try {
             GifDrawable gifDrawable = new GifDrawable(mContext.getAssets(),gif_2);
@@ -339,9 +354,15 @@ public class MeoryClearAllActivity extends RubbishActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMeoryClearEvent(MeoryClearEvent event) {
-        LogUtil.e("onEvent=","onMeoryClearEvent");
+    public void onClearAllMeory(Long L){
+        tv_ariable_meory_c.setText(TextFormater.dataSizeFormatArray(L)[0]);
+        tv_ariable_c.setText(TextFormater.dataSizeFormatArray(L)[1]);
 
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMeoryClearEvent(MeoryClearEvent event) {
+        LogUtil.e("onEvent=","onMeoryClearEvent="+event.getCacheSize());
         GifDrawable gifDrawable_3 = null;
         try {
             gifDrawable_3 = new GifDrawable(mContext.getAssets(),gif_3);
@@ -350,8 +371,8 @@ public class MeoryClearAllActivity extends RubbishActivity {
             e.printStackTrace();
         }
 
-        tv_ariable_meory_c.setText(TextFormater.dataSizeFormatArray(cacheSizes)[0]);
-        tv_ariable_c.setText(TextFormater.dataSizeFormatArray(cacheSizes)[1]);
+        tv_ariable_meory_c.setText(TextFormater.dataSizeFormatArray(event.getCacheSize())[0]);
+        tv_ariable_c.setText(TextFormater.dataSizeFormatArray(event.getCacheSize())[1]);
         tv_ariable_meory_c.setVisibility(View.VISIBLE);
         tv_ariable_c.setVisibility(View.VISIBLE);
         tv_clear_over.setVisibility(View.VISIBLE);
@@ -360,4 +381,23 @@ public class MeoryClearAllActivity extends RubbishActivity {
         btn_one_cler.setVisibility(View.VISIBLE);
         btn_one_cler.setText(text_temp);
     }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMeoryEvent(ClearChoiseAllEvent event){
+        LogUtil.e("eventbus","ClearChoiseAllEvent 空");
+        if (event==null)return;
+        LogUtil.e("eventbus",event.toString());
+        if (event.getType().equals(Constant.TYPE_CLEARN_MEORY_ALL)){
+            showSnackbar(event.getCount() > 0 ? "共清理" + event.getCount() + "个进程,共占内存" +
+                    TextFormater.dataSizeFormat(event.getMemorySize()) +
+                    "内存" : "未选中要清理的进程");
+            EventBus.getDefault().post(new Long(event.getMemorySize()));
+        }
+
+    }
+
+
+
+
 }

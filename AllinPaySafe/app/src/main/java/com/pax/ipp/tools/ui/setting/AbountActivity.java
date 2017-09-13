@@ -3,10 +3,13 @@ package com.pax.ipp.tools.ui.setting;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.pax.ipp.tools.R;
 import com.pax.ipp.tools.ui.base.BaseActivity;
+import com.pax.ipp.tools.utils.ApplicationUtils;
 
 import butterknife.BindView;
 
@@ -22,7 +25,11 @@ public class AbountActivity extends BaseActivity{
     @BindView(R.id.toolbar_title)
     TextView toolbar_title;
 
+    @BindView(R.id.tv_version_name)
+    TextView tv_version_name;
 
+    @BindView(R.id.btn_updata)
+    Button btn_updata;
 
     @Override
     public int getLayoutId() {
@@ -39,8 +46,8 @@ public class AbountActivity extends BaseActivity{
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
         }
-
-
+        btn_updata.setVisibility(View.GONE);
+        tv_version_name.setText(ApplicationUtils.getVersionName(mContext));
     }
 
     @Override

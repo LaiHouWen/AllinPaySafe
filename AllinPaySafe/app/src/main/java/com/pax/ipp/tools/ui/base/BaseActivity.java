@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
+import android.util.AttributeSet;
+import android.view.View;
 import android.widget.Toast;
 
 import com.pax.ipp.tools.utils.LogUtil;
@@ -38,10 +40,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 //        mPresenter = TUtil.getT(this, 0);
 //        mModel = TUtil.getT(this, 1);
 
-
         this.initView(savedInstanceState);
         this.initPresenter();
     }
+
     public abstract int getLayoutId();
 
     public abstract void initView(Bundle savedInstanceState);

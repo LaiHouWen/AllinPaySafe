@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.pax.ipp.tools.R;
 import com.pax.ipp.tools.adapter.base.BaseRecyclerViewAdapter;
+import com.pax.ipp.tools.adapter.viewholder.EmptyViewHolder;
 import com.pax.ipp.tools.adapter.viewholder.FlowViewHolder;
 import com.pax.ipp.tools.adapter.viewholder.ProcessItemViewHolder;
 import com.pax.ipp.tools.model.CacheListItem;
@@ -19,6 +20,7 @@ import java.util.List;
 
 /**
  * Created by houwen.lai on 2017/9/7.
+ *
  */
 
 public class FlowListAdapter extends BaseRecyclerViewAdapter<FlowModel> {
@@ -31,15 +33,24 @@ public class FlowListAdapter extends BaseRecyclerViewAdapter<FlowModel> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mContext = parent.getContext();
-        final View view = LayoutInflater.from(mContext)
-                .inflate(R.layout.item_list_flow,
-                        parent, false);
-        return new FlowViewHolder(view);
+        if (viewType==itemType_empty){
+            final View view = LayoutInflater.from(mContext)
+                    .inflate(R.layout.item_list_flow,
+                            parent, false);
+            return new EmptyViewHolder(view);
+        }else {
+            final View view = LayoutInflater.from(mContext)
+                    .inflate(R.layout.item_list_flow,
+                            parent, false);
+            return new FlowViewHolder(view);
+        }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         super.onBindViewHolder(viewHolder, position);
+        if (viewHolder instanceof EmptyViewHolder)return;
+
         FlowViewHolder holder = (FlowViewHolder) viewHolder;
         FlowModel flowModel = list.get(position);
         if (flowModel == null) return;

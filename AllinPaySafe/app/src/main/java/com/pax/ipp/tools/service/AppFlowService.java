@@ -52,7 +52,6 @@ public class AppFlowService extends Service {
     PackageManager packageManager = null;
     Context mContext;
 
-
     private Binder mBinder = new AppFlowManager.Stub() {
         @Override
         public List<AppFlow> getAppFlowList() throws RemoteException {
@@ -67,7 +66,8 @@ public class AppFlowService extends Service {
                 LogUtil.d("AppFlow","-packageName="+packageName+"  appValues="+appValues.toString());
                long flows = 0;
                 if (appValues!=null&&appValues.containsKey(DateUtil.getToday())){
-                    flows = appValues.get(DateUtil.getToday());
+//                    flows = appValues.get(DateUtil.getToday());
+                    flows = FlowUtil.getInstance().getTodayBytesByUid(mContext,0,packageName);
                 }
                 AppFlow appFlow=new AppFlow(DateUtil.getToday(),
                         AppUtils.getAppNameByPackageName(mContext,packageName),

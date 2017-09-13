@@ -189,7 +189,8 @@ public class CircularLoaderPresenter
                     mHandler.sendMessage(msg);
                 }
             }
-        }, 0, 1000);
+        }, 0, 10000);
+        //每10s刷一次
     }
 
 

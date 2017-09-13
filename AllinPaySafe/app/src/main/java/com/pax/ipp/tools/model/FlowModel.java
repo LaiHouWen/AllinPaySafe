@@ -14,6 +14,17 @@ public class FlowModel implements Serializable{
     private Drawable mIcon;
     private long flowSize;
 
+    public FlowModel() {
+        super();
+    }
+
+    public FlowModel(String mPackageName, String mApplicationName, Drawable mIcon, long flowSize) {
+        this.mPackageName = mPackageName;
+        this.mApplicationName = mApplicationName;
+        this.mIcon = mIcon;
+        this.flowSize = flowSize;
+    }
+
     public String getmPackageName() {
         return mPackageName;
     }

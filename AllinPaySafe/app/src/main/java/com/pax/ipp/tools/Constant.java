@@ -30,6 +30,6 @@ public class Constant {
 
     public static final String ACTION_SEND_ALARM = "ACTION_SEND_ALARM";//定时器
 
-
+    public static final String TYPE_CLEARN_MEORY_ALL="type_meory_all";
 
 }

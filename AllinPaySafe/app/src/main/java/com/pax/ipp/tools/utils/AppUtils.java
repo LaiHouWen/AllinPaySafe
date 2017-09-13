@@ -3,7 +3,9 @@ package com.pax.ipp.tools.utils;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -91,5 +93,20 @@ public class AppUtils {
         return name;
     }
 
+    /**
+     *
+     * @param context
+     * @param packageName
+     * @return
+     * @throws PackageManager.NameNotFoundException
+     */
+    public Drawable getAppInfoByPackageName(Context context,String packageName) throws PackageManager.NameNotFoundException {
+// TODO Auto-generated constructor stub
+        PackageManager packageManager =context.getPackageManager();
+        ApplicationInfo application= packageManager.getPackageInfo(packageName, 0).applicationInfo;
 
+//        String[] appInfo=new String[]{packageName,application.loadLabel(packageManager).toString()};
+        Drawable d = application.loadIcon(packageManager);
+        return d;
+    }
 }

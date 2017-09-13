@@ -215,25 +215,27 @@ public class FlowUtil {
         String time_shundown =  SharedPreUtils.getInstanse().getKeyValue(context,Constant.Time_ShunDown);
         LogUtil.d("flow 有效时间",time_shundown);
         String today = DateUtil.getToday();
-        if (Constant.flowTodayMonth!=null){
-            if (TextUtils.isEmpty(time_shundown)){//一直没有关机
-                if (Constant.flowTodayMonth.containsKey(DateUtil.getYesterday())){//判断昨天是否有值
-                    sum=Constant.flowTodayMonth.get(today)-
-                            Constant.flowTodayMonth.get(DateUtil.getYesterday());
-                }else{
-                    sum=Constant.flowTodayMonth.get(DateUtil.getToday());
-                }
-            }else {//关机
-                if (Constant.flowTodayMonth.containsKey(DateUtil.getYesterday())){//判断昨天是否有值
-                    sum=Constant.flowTodayMonth.get(DateUtil.getToday())-
-                            Constant.flowTodayMonth.get(DateUtil.getYesterday());
-                }else{//
-                    if (!today.equals(time_shundown)) {
-                        if ( Constant.flowTodayMonth.containsKey(time_shundown))
-                        sum = Constant.flowTodayMonth.get(today)-
-                                Constant.flowTodayMonth.get(time_shundown);
-                        else sum = Constant.flowTodayMonth.get(today);
-                    }else sum=Constant.flowTodayMonth.get(today);
+        synchronized (Constant.flowTodayMonth) {
+            if (Constant.flowTodayMonth != null) {
+                if (TextUtils.isEmpty(time_shundown)) {//一直没有关机
+                    if (Constant.flowTodayMonth.containsKey(DateUtil.getYesterday())) {//判断昨天是否有值
+                        sum = Constant.flowTodayMonth.get(today) -
+                                Constant.flowTodayMonth.get(DateUtil.getYesterday());
+                    } else {
+                        sum = Constant.flowTodayMonth.get(DateUtil.getToday());
+                    }
+                } else {//关机
+                    if (Constant.flowTodayMonth.containsKey(DateUtil.getYesterday())) {//判断昨天是否有值
+                        sum = Constant.flowTodayMonth.get(DateUtil.getToday()) -
+                                Constant.flowTodayMonth.get(DateUtil.getYesterday());
+                    } else {//
+                        if (!today.equals(time_shundown)) {
+                            if (Constant.flowTodayMonth.containsKey(time_shundown))
+                                sum = Constant.flowTodayMonth.get(today) -
+                                        Constant.flowTodayMonth.get(time_shundown);
+                            else sum = Constant.flowTodayMonth.get(today);
+                        } else sum = Constant.flowTodayMonth.get(today);
+                    }
                 }
             }
         }
@@ -251,15 +253,16 @@ public class FlowUtil {
 //        String avaible = SharedPreUtils.getInstanse().getKeyValue(context,Constant.Time_Availble);
         String time_shundown = SharedPreUtils.getInstanse().getKeyValue(context,Constant.Time_Availble_month);
         LogUtil.d("flow 有效时间month"," 有效月="+time_shundown);
-
-        if (Constant.flowTodayMonth!=null){
-            if (TextUtils.isEmpty(time_shundown)){
-                sum=Constant.flowTodayMonth.get(DateUtil.getToday());
-            }else {
-                if (!DateUtil.getToday().substring(0,7).equals(time_shundown.substring(0,7)))
-                sum=Constant.flowTodayMonth.get(DateUtil.getToday())-
-                    Constant.flowTodayMonth.get(time_shundown);
-                else sum=Constant.flowTodayMonth.get(DateUtil.getToday());
+        synchronized (Constant.flowTodayMonth) {
+            if (Constant.flowTodayMonth != null) {
+                if (TextUtils.isEmpty(time_shundown)) {
+                    sum = Constant.flowTodayMonth.get(DateUtil.getToday());
+                } else {
+                    if (!DateUtil.getToday().substring(0, 7).equals(time_shundown.substring(0, 7)))
+                        sum = Constant.flowTodayMonth.get(DateUtil.getToday()) -
+                                Constant.flowTodayMonth.get(time_shundown);
+                    else sum = Constant.flowTodayMonth.get(DateUtil.getToday());
+                }
             }
         }
         LogUtil.e("flow 今月的流量=",sum+"");
@@ -275,28 +278,30 @@ public class FlowUtil {
 //        long flow_mobile =  getMobileBytes(uid);
         long sum =0;
         String time_shundown = SharedPreUtils.getInstanse().getKeyValue(context,Constant.Time_ShunDown);
-
-        if (Constant.flowHistoryList!=null&&Constant.flowHistoryList.containsKey(packageName)){
-            if (TextUtils.isEmpty(time_shundown)){//无关机
-                if (Constant.flowHistoryList.get(packageName).containsKey(DateUtil.getYesterday())){
-                    sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday())-
-                            Constant.flowHistoryList.get(packageName).get(DateUtil.getYesterday());
-                }else{
-                    sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday());
+        synchronized (Constant.flowHistoryList) {
+            if (Constant.flowHistoryList != null && Constant.flowHistoryList.containsKey(packageName)) {
+                if (TextUtils.isEmpty(time_shundown)) {//无关机
+                    if (Constant.flowHistoryList.get(packageName).containsKey(DateUtil.getYesterday())) {
+                        sum = Constant.flowHistoryList.get(packageName).get(DateUtil.getToday()) -
+                                Constant.flowHistoryList.get(packageName).get(DateUtil.getYesterday());
+                    } else {
+                        sum = Constant.flowHistoryList.get(packageName).get(DateUtil.getToday());
+                    }
+                } else {//关机
+                    if (Constant.flowHistoryList.get(packageName).containsKey(DateUtil.getYesterday())) {
+                        sum = Constant.flowHistoryList.get(packageName).get(DateUtil.getToday()) -
+                                Constant.flowHistoryList.get(packageName).get(DateUtil.getYesterday());
+                    } else {
+                        if (!DateUtil.getToday().equals(time_shundown))
+                            sum = Constant.flowHistoryList.get(packageName).get(DateUtil.getToday()) -
+                                    Constant.flowHistoryList.get(packageName).get(time_shundown);
+                        else
+                            sum = Constant.flowHistoryList.get(packageName).get(DateUtil.getToday());
+                    }
                 }
-            }else {//关机
-                if (Constant.flowHistoryList.get(packageName).containsKey(DateUtil.getYesterday())){
-                    sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday())-
-                            Constant.flowHistoryList.get(packageName).get(DateUtil.getYesterday());
-                }else{
-                    if (!DateUtil.getToday().equals(time_shundown))
-                    sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday())-
-                            Constant.flowHistoryList.get(packageName).get(time_shundown);
-                    else sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday());
-                }
+            } else {
+                sum = 0;
             }
-        }else {
-           sum=0;
         }
         LogUtil.e("flow_uid","uid="+uid+" sum="+sum);
         return sum;
@@ -311,19 +316,20 @@ public class FlowUtil {
 //        long flow_mobile = getMobileBytes(uid);
         long sum = 0;
         String time_shundown = SharedPreUtils.getInstanse().getKeyValue(context, Constant.Time_Availble_month);
+        synchronized (Constant.flowHistoryList){
+            if (Constant.flowHistoryList!=null&&Constant.flowHistoryList.containsKey(packageName)){
+                if (TextUtils.isEmpty(time_shundown)){//
+                        sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday());
 
-        if (Constant.flowHistoryList!=null&&Constant.flowHistoryList.containsKey(packageName)){
-            if (TextUtils.isEmpty(time_shundown)){//
-                    sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday());
-
-            }else {//关机
-                if (!DateUtil.getToday().substring(0,7).equals(time_shundown.substring(0,7)))
-                    sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday())-
-                            Constant.flowHistoryList.get(packageName).get(time_shundown);
-                else sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday());
+                }else {//关机
+                    if (!DateUtil.getToday().substring(0,7).equals(time_shundown.substring(0,7)))
+                        sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday())-
+                                Constant.flowHistoryList.get(packageName).get(time_shundown);
+                    else sum=Constant.flowHistoryList.get(packageName).get(DateUtil.getToday());
+                }
+            }else {
+                sum=0;
             }
-        }else {
-            sum=0;
         }
         LogUtil.e("flow_getMonthBytesByUid","month="+DateUtil.getToday().substring(6)+" sum="+sum);
         return sum;
@@ -341,24 +347,26 @@ public class FlowUtil {
         //开机时间
         String time_shundown = SharedPreUtils.getInstanse().getKeyValue(context,Constant.Time_ShunDown);
         LogUtil.e("flow_保存总流量___","上一次关机时间="+time_shundown);
-        if (Constant.flowTodayMonth!=null){
-            //安装后没有关机状态
-            if (TextUtils.isEmpty(time_shundown)){
-                sum=totail;
-            } else if (Constant.flowTodayMonth.containsKey(time_shundown)) {//已经关机过
-                sum = Constant.flowTodayMonth.get(time_shundown)+totail;
-            }else  sum=totail;
-        }
-
-        if (Constant.flowTodayMonth!=null)
-        Constant.flowTodayMonth.put(DateUtil.getToday(),sum);//保存到map中
-        LogUtil.e("flow_保存总流量___","key="+shunDownTime+" value="+sum);
-        //把map转换成 保存xml文件
         String flowDay = "";
-        if (Constant.flowTodayMonth!=null)
-        flowDay = GsonUtil.mapToJsonString(Constant.flowTodayMonth);
-        LogUtil.e("flow_保存总流量",flowDay.toString());
+        synchronized (Constant.flowTodayMonth) {
+            if (Constant.flowTodayMonth != null) {
+                //安装后没有关机状态
+                if (TextUtils.isEmpty(time_shundown)) {
+                    sum = totail;
+                } else if (Constant.flowTodayMonth.containsKey(time_shundown)) {//已经关机过
+                    sum = Constant.flowTodayMonth.get(time_shundown) + totail;
+                } else sum = totail;
+            }
 
+            if (Constant.flowTodayMonth != null)
+                Constant.flowTodayMonth.put(DateUtil.getToday(), sum);//保存到map中
+            LogUtil.e("flow_保存总流量___", "key=" + shunDownTime + " value=" + sum);
+            //把map转换成 保存xml文件
+
+            if (Constant.flowTodayMonth != null)
+                flowDay = GsonUtil.mapToJsonString(Constant.flowTodayMonth);
+            LogUtil.e("flow_保存总流量", flowDay.toString());
+        }
         boolean flag = SharedPreUtils.getInstanse().putKeyValue(context,Constant.FlowPaxTools_Totail,flowDay);
         LogUtil.e("flow_保存总流量 是否成功",flag+"");
         return sum;
@@ -377,21 +385,23 @@ public class FlowUtil {
 //        long totail = getTotailByUid(uid);
         String time_shundown = SharedPreUtils.getInstanse().getKeyValue(context, Constant.Time_ShunDown);
         long sum = 0;
-        if (Constant.flowHistoryList != null && Constant.flowHistoryList.containsKey(uid) ) {
-            if (TextUtils.isEmpty(time_shundown)) {//没有关机
+        synchronized (Constant.flowHistoryList){
+            if (Constant.flowHistoryList != null && Constant.flowHistoryList.containsKey(uid) ) {
+                if (TextUtils.isEmpty(time_shundown)) {//没有关机
+                    sum = totail;
+                    Constant.flowHistoryList.get(packgeName).put(shunDownTime, sum);
+                }else {//关机了
+                    if (!TextUtils.isEmpty(time_shundown)&&Constant.flowHistoryList.get(uid).containsKey(time_shundown))
+                    sum = totail+Constant.flowHistoryList.get(packgeName).get(time_shundown);
+                    else sum = totail;
+                    Constant.flowHistoryList.get(packgeName).put(shunDownTime, sum);
+                }
+             }else{
                 sum = totail;
-                Constant.flowHistoryList.get(packgeName).put(shunDownTime, sum);
-            }else {//关机了
-                if (!TextUtils.isEmpty(time_shundown)&&Constant.flowHistoryList.get(uid).containsKey(time_shundown))
-                sum = totail+Constant.flowHistoryList.get(packgeName).get(time_shundown);
-                else sum = totail;
-                Constant.flowHistoryList.get(packgeName).put(shunDownTime, sum);
+                Map<String,Long> map = new HashMap<String,Long>();
+                map.put(shunDownTime,sum);
+                Constant.flowHistoryList.put(packgeName,map);
             }
-         }else{
-            sum = totail;
-            Map<String,Long> map = new HashMap<String,Long>();
-            map.put(shunDownTime,sum);
-            Constant.flowHistoryList.put(packgeName,map);
         }
         LogUtil.e("flow_保存总流量_add__uid_","uid="+uid +" packge="+packgeName+" key="+shunDownTime+" value="+totail);
         return sum;
@@ -400,7 +410,9 @@ public class FlowUtil {
     public boolean saveFlowUidBytes(Context context){
         String flow = "";
         if (Constant.flowHistoryList!=null){
-            flow = GsonUtil.mapToJsonIntegerString(Constant.flowHistoryList);
+            synchronized (Constant.flowHistoryList){
+                flow = GsonUtil.mapToJsonIntegerString(Constant.flowHistoryList);
+            }
         }
         LogUtil.e("flow-流量保存 uid",flow.toString());
         boolean flag=SharedPreUtils.getInstanse().putKeyValue(context,Constant.FlowPaxToolsByUid,flow);
