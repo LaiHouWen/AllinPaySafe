@@ -5,13 +5,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.pax.ipp.tools.R;
 import com.pax.ipp.tools.ui.base.BaseActivity;
 import com.pax.ipp.tools.utils.ApplicationUtils;
+import com.pax.ipp.tools.utils.FlowUtil;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 /**
  * Created by houwen.lai on 2017/9/1.
@@ -27,6 +30,9 @@ public class AbountActivity extends BaseActivity{
 
     @BindView(R.id.tv_version_name)
     TextView tv_version_name;
+
+    @BindView(R.id.img_icon_about)
+    ImageView img_icon_about;
 
     @BindView(R.id.btn_updata)
     Button btn_updata;
@@ -63,4 +69,16 @@ public class AbountActivity extends BaseActivity{
         }
         return super.onOptionsItemSelected(item);
     }
+    long time=0;
+    @OnClick(R.id.img_icon_about)
+    public void onClick(View v){
+        if (v.getId()==R.id.img_icon_about&&System.currentTimeMillis()-time<1100){
+            //清除流量
+                FlowUtil.getInstance().cleanCachaFlow(mContext);
+                FlowUtil.getInstance().cleanCachaFlowByUid(mContext);
+        }else  time = System.currentTimeMillis();
+
+    }
+
+
 }

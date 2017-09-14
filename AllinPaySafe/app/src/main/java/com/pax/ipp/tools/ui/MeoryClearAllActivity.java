@@ -74,6 +74,7 @@ public class MeoryClearAllActivity extends RubbishActivity {
 
     final String gif_0 ="gi_f_1.gif";
     final String gif_1 ="gi_f_2.gif";
+    final String gif_1_1 ="gi_f_2_1.gif";
     final String gif_2 ="gi_f_3.gif";
     final String gif_3 ="gi_f_4.gif";
     boolean flag_0 = false;
@@ -138,7 +139,6 @@ public class MeoryClearAllActivity extends RubbishActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-
                 finish();
                 return true;
         }
@@ -232,7 +232,7 @@ public class MeoryClearAllActivity extends RubbishActivity {
                 @Override
                 public void onAnimationCompleted(int loopNumber) {
                     gifDrawable.reset();
-                    gifImageview.setImageDrawable(gifDrawable);
+//                    gifImageview.setImageDrawable(gifDrawable);
                     flag_2=true;
                 }
             });
@@ -255,6 +255,7 @@ public class MeoryClearAllActivity extends RubbishActivity {
 //        setGifImageview(gif_0);
         try {
             GifDrawable gifDrawable = new GifDrawable(mContext.getAssets(),gif_0);
+            GifDrawable gifDrawable_1 = new GifDrawable(mContext.getAssets(),gif_1_1);
             gifImageview.setImageDrawable(gifDrawable);
             gifDrawable.addAnimationListener(new AnimationListener() {
                 @Override
@@ -267,8 +268,16 @@ public class MeoryClearAllActivity extends RubbishActivity {
                     btn_one_cler.setVisibility(View.GONE);
                     flag_0=true;
 
+                    gifImageview.setImageDrawable(gifDrawable_1);
+
+
+                }
+            });
+            gifDrawable_1.addAnimationListener(new AnimationListener() {
+                @Override
+                public void onAnimationCompleted(int loopNumber) {
                     if (!btn_one_cler.isEnabled()){
-                        gifDrawable.reset();
+                        gifDrawable_1.reset();
                     }else {
                         btn_look_detail.setVisibility(View.VISIBLE);
                         btn_one_cler.setVisibility(View.VISIBLE);
@@ -324,7 +333,11 @@ public class MeoryClearAllActivity extends RubbishActivity {
 
 //        tv_ariable_meory_c.setText(TextFormater.dataSizeFormatArray(cacheSizes)[0]);
 //        tv_ariable_c.setText(TextFormater.dataSizeFormatArray(cacheSizes)[1]);
+        cancalAnimation();
 
+    }
+
+    public void cancalAnimation(){
         try {
             GifDrawable gifDrawable = new GifDrawable(mContext.getAssets(),gif_2);
             GifDrawable gifDrawable_3 = new GifDrawable(mContext.getAssets(),gif_3);
@@ -355,6 +368,7 @@ public class MeoryClearAllActivity extends RubbishActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onClearAllMeory(Long L){
+        cancalAnimation();
         tv_ariable_meory_c.setText(TextFormater.dataSizeFormatArray(L)[0]);
         tv_ariable_c.setText(TextFormater.dataSizeFormatArray(L)[1]);
 

@@ -303,10 +303,49 @@ public class FlowUtil {
                 sum = 0;
             }
         }
-        LogUtil.e("flow_uid","uid="+uid+" sum="+sum);
+        LogUtil.e("flow_uid","packageName="+packageName+" sum="+sum);
         return sum;
     }
-
+    /**
+     * 根据某个进程查询它今天的流量
+     * @return
+     */
+    public long getTodayBytesByUid(Context context,Map<String,Map<String,Long>> flowHistoryList,int uid,String packageName){
+        //从开机到关机
+//        long flow_mobile =  getMobileBytes(uid);
+        long sum =0;
+        String time_shundown = SharedPreUtils.getInstanse().getKeyValue(context,Constant.Time_ShunDown);
+            if (flowHistoryList != null && flowHistoryList.containsKey(packageName)) {
+                if (TextUtils.isEmpty(time_shundown)) {//无关机
+                    if (flowHistoryList.get(packageName).containsKey(DateUtil.getYesterday())) {
+                        sum = getContainsKey(flowHistoryList.get(packageName),DateUtil.getToday()) -
+                                flowHistoryList.get(packageName).get(DateUtil.getYesterday());
+                    } else {
+                        sum =!flowHistoryList.get(packageName).containsKey(DateUtil.getToday())?0: flowHistoryList.get(packageName).get(DateUtil.getToday());
+                    }
+                } else {//关机
+                    if (flowHistoryList.get(packageName).containsKey(DateUtil.getYesterday())) {
+                        sum =getContainsKey(flowHistoryList.get(packageName),DateUtil.getToday()) -
+                                flowHistoryList.get(packageName).get(DateUtil.getYesterday());
+                    } else {
+                        if (!DateUtil.getToday().equals(time_shundown))
+                            sum = getContainsKey(flowHistoryList.get(packageName),DateUtil.getToday()) -
+                                    flowHistoryList.get(packageName).get(time_shundown);
+                        else
+                            sum =getContainsKey(flowHistoryList.get(packageName),DateUtil.getToday());
+                    }
+                }
+            } else {
+                sum = 0;
+            }
+        LogUtil.e("flow_uid","packgerName="+packageName+" sum="+sum);
+        return sum;
+    }
+    public static long getContainsKey(Map<String,Long> map,String key){
+        if (map==null)return 0;
+        if (map.containsKey(key))return map.get(key);
+        else return 0;
+    }
     /**
      * 根据某个进程查询它当月的流量
      * @return
@@ -334,7 +373,27 @@ public class FlowUtil {
         LogUtil.e("flow_getMonthBytesByUid","month="+DateUtil.getToday().substring(6)+" sum="+sum);
         return sum;
     }
+    public long getMonthBytesByUid(Context context,Map<String,Map<String,Long>> flowHistoryList,int uid,String packageName) {
+        //从开机到关机
+//        long flow_mobile = getMobileBytes(uid);
+        long sum = 0;
+        String time_shundown = SharedPreUtils.getInstanse().getKeyValue(context, Constant.Time_Availble_month);
+            if (flowHistoryList!=null&&flowHistoryList.containsKey(packageName)){
+                if (TextUtils.isEmpty(time_shundown)){//
+                    sum=!flowHistoryList.get(packageName).containsKey(DateUtil.getToday())?0:flowHistoryList.get(packageName).get(DateUtil.getToday());
 
+                }else {//关机
+                    if (!DateUtil.getToday().substring(0,7).equals(time_shundown.substring(0,7)))
+                        sum=getContainsKey(flowHistoryList.get(packageName),DateUtil.getToday())-
+                                flowHistoryList.get(packageName).get(time_shundown);
+                    else sum=getContainsKey(flowHistoryList.get(packageName),DateUtil.getToday());
+                }
+            }else {
+                sum=0;
+            }
+        LogUtil.e("flow_getMonthBytesByUid","month="+DateUtil.getToday().substring(6)+" sum="+sum);
+        return sum;
+    }
     /**
      * 关机
      * 保存总流量信息

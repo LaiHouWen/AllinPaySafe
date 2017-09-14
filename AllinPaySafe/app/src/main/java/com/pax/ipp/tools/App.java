@@ -13,8 +13,6 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 
-import com.pax.ipp.tools.model.BaseFlowModel;
-import com.pax.ipp.tools.model.FlowModel;
 import com.pax.ipp.tools.service.AppFlowService;
 import com.pax.ipp.tools.service.RequestAlarmReceiver;
 import com.pax.ipp.tools.service.SaveFlowService;
@@ -22,9 +20,6 @@ import com.pax.ipp.tools.utils.DateUtil;
 import com.pax.ipp.tools.utils.FlowUtil;
 
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-
 /**
  * Created by houwen.lai on 2017/8/31.
  *

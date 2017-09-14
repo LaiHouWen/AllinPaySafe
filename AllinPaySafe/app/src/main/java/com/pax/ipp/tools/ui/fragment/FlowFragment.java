@@ -32,6 +32,7 @@ import com.pax.ipp.tools.utils.LogUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -394,9 +395,10 @@ private void setAdapter(){
                         FlowModel model=null;
                         ApplicationInfo appInfo = null;
                         PackageManager packageManager =mContext.getPackageManager();
-                        synchronized (Constant.flowHistoryList) {
-                            if (Constant.flowHistoryList != null) {
-                                Iterator iter = Constant.flowHistoryList.entrySet().iterator();
+                        Map<String,Map<String,Long>> flowHistoryList=new HashMap<String,Map<String,Long>>();//所有的历史流量信息
+                        flowHistoryList = FlowUtil.getInstance().getFlowTotailUid(mContext);
+                            if (flowHistoryList != null) {
+                                Iterator iter = flowHistoryList.entrySet().iterator();
                                 while (iter.hasNext()) {
                                     Map.Entry entry = (Map.Entry) iter.next();
                                     String packageName = (String) entry.getKey();
@@ -405,11 +407,15 @@ private void setAdapter(){
 
                                     long flows = 0;
                                     if (getArguments().getBoolean(FLAG_TIME)){//今日
-                                        flows = FlowUtil.getInstance().getTodayBytesByUid(mContext,0,packageName);
+                                        flows = FlowUtil.getInstance().getTodayBytesByUid(mContext,flowHistoryList,0,packageName);
+
+//                                        long flows= FlowUtil.getInstance().getSystemBytesByUid(mContext,appProcessInfo.uid,
+//                                                FlowUtil.getInstance().getTimesMonthMorning(),System.currentTimeMillis());
+
                                     }else {//月
-                                        flows = FlowUtil.getInstance().getMonthBytesByUid(mContext,0,packageName);
+                                        flows = FlowUtil.getInstance().getMonthBytesByUid(mContext,flowHistoryList,0,packageName);
                                     }
-                                    LogUtil.e("flow_",  " packageName=" + packageName + " flows=" + flows);
+                                    LogUtil.e("flow_fragment",  " packageName=" + packageName + " flows=" + flows);
 
                                     ApplicationInfo application= null;
                                     Drawable d = null;
@@ -424,8 +430,6 @@ private void setAdapter(){
                                         e.printStackTrace();
                                     }
 //        String[] appInfo=new String[]{packageName,application.loadLabel(packageManager).toString()};
-
-                                }
                             }
                         }
                         subscriber.onNext(listss);
@@ -460,7 +464,7 @@ private void setAdapter(){
                 Collections.reverse(flowModelList);
 
 
-                LogUtil.e("flow",flowModelList.size()+"");
+                LogUtil.e("flow_fragment",flowModelList.size()+"");
                 lists.addAll(flowModelList);
                 flowListAdapter.setList(flowModelList);
                 flowListAdapter.notifyDataSetChanged();

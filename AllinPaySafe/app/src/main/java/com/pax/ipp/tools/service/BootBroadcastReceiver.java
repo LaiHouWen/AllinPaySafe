@@ -33,7 +33,6 @@ import java.util.Calendar;
 
 public class BootBroadcastReceiver extends BroadcastReceiver {
     final String TAG = BootBroadcastReceiver.class.getSimpleName();
-    final int REQUEST_CODE = 0x010101;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -56,7 +55,7 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
             //保存开机时间
             SharedPreUtils.getInstanse().putKeyValue(context,Constant.Time_StartDown,today);
             //月
-
+            setAlarmTime(context);//启动定时器
         }
 
         //系统关闭广播接收器
@@ -101,9 +100,11 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
     };
 
     private static final int INTERVAL = 1000 * 60 * 60 * 24;// 24h
+    final int REQUEST_CODE = 0x010101;
 
     public void setAlarmTime(Context context){
         Intent intent = new Intent(context, RequestAlarmReceiver.class);
+        intent.setAction(Constant.ACTION_SEND_ALARM);
         PendingIntent sender = PendingIntent.getBroadcast(context,
                 REQUEST_CODE, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
@@ -112,13 +113,19 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
                 .getSystemService(Context.ALARM_SERVICE);
 
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 11);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 50);
+        calendar.set(Calendar.HOUR_OF_DAY, 19);
+        calendar.set(Calendar.MINUTE,02);
+        calendar.set(Calendar.SECOND, 20);
         calendar.set(Calendar.MILLISECOND, 0);
 
-        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                INTERVAL, sender);
+        //触发服务的起始时间
+        long triggerAtTime = SystemClock.elapsedRealtime();
+
+        am.setRepeating(AlarmManager.RTC_WAKEUP, triggerAtTime,
+                3*60*1000, sender);
+
+//        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+//                INTERVAL, sender);
 
     }
 

@@ -124,9 +124,9 @@ public abstract class BaseRecyclerViewAdapter<E>
 
 
     @Override public int getItemViewType(int position) {
-        if (list==null||list.size()==0){
-            itemType=itemType_empty;
-        }
+//        if (list==null||list.size()==0){
+//            itemType=itemType_empty;
+//        }
         itemType=itemType_item;
         return itemType;
     }

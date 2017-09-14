@@ -190,8 +190,8 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
                 startActivity(new Intent(mContext,FlowActivity.class).putExtra("time","month"));
                 break;
             case R.id.tv_more_detail://清除流量
-                FlowUtil.getInstance().cleanCachaFlow(mContext);
-                FlowUtil.getInstance().cleanCachaFlowByUid(mContext);
+//                FlowUtil.getInstance().cleanCachaFlow(mContext);
+//                FlowUtil.getInstance().cleanCachaFlowByUid(mContext);
                 break;
                 default:
                     break;

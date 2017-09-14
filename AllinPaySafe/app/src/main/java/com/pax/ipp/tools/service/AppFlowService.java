@@ -57,8 +57,12 @@ public class AppFlowService extends Service {
         public List<AppFlow> getAppFlowList() throws RemoteException {
             LogUtil.e("AppFlow_service","getAppFlowList");
             if (Constant.flowHistoryList==null)return null;
+            FlowUtil.getInstance().saveFlowDate(mContext,DateUtil.getToday());
+            FlowUtil.getInstance().saveFlowUidBytes(mContext);
             List<AppFlow> list=new ArrayList<AppFlow>();
-            Iterator iter = Constant.flowHistoryList.entrySet().iterator();
+            Map<String,Map<String,Long>> flowHistoryList=new HashMap<String,Map<String,Long>>();//所有的历史流量信息
+            flowHistoryList = FlowUtil.getInstance().getFlowTotailUid(mContext);
+            Iterator iter = flowHistoryList.entrySet().iterator();
             while (iter.hasNext()){
                 Map.Entry entry = (Map.Entry) iter.next();
                 String packageName = (String) entry.getKey();
@@ -67,7 +71,7 @@ public class AppFlowService extends Service {
                long flows = 0;
                 if (appValues!=null&&appValues.containsKey(DateUtil.getToday())){
 //                    flows = appValues.get(DateUtil.getToday());
-                    flows = FlowUtil.getInstance().getTodayBytesByUid(mContext,0,packageName);
+                    flows = FlowUtil.getInstance().getTodayBytesByUid(mContext,flowHistoryList,0,packageName);
                 }
                 AppFlow appFlow=new AppFlow(DateUtil.getToday(),
                         AppUtils.getAppNameByPackageName(mContext,packageName),
