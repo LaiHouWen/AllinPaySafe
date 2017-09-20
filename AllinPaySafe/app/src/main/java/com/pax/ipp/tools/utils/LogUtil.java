@@ -2,12 +2,14 @@ package com.pax.ipp.tools.utils;
 
 import android.util.Log;
 
+import com.pax.ipp.tools.BuildConfig;
+
 public class LogUtil {
 	
 	static String className;
 	static String methodName;
 	static int lineNumber;//BuildConfig.DEBUG
-	static boolean DEBUGGABLE = true; //false/true/BuildConfig.DEBUG
+	static boolean DEBUGGABLE = BuildConfig.LOG_DEBUG; //false/true/BuildConfig.DEBUG
 	
     private LogUtil(){
         /* Protect from instantiations */

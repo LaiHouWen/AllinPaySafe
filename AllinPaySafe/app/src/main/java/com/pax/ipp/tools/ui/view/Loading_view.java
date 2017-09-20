@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.pax.ipp.tools.R;
 
@@ -23,6 +24,8 @@ import com.pax.ipp.tools.R;
 
 public class Loading_view extends ProgressDialog {
 
+    private TextView tv_load_dialog;
+
     public Loading_view(Context context) {
         super(context);
     }
@@ -40,10 +43,14 @@ public class Loading_view extends ProgressDialog {
         setCancelable(true);
         setCanceledOnTouchOutside(false);
         setContentView(R.layout.view_loading);//loading的xml文件
+        tv_load_dialog= (TextView) findViewById(R.id.tv_load_dialog);
         WindowManager.LayoutParams params = getWindow().getAttributes();
         params.width = WindowManager.LayoutParams.WRAP_CONTENT;
         params.height = WindowManager.LayoutParams.WRAP_CONTENT;
         getWindow().setAttributes(params);
+    }
+    public void setTv_load_dialog(String text){
+        if (tv_load_dialog!=null)tv_load_dialog.setText(text);
     }
     @Override
     public void show() {//开启

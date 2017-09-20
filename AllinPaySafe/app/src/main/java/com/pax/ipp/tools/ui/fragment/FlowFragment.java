@@ -8,23 +8,19 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 
 import com.jaredrummler.android.processes.AndroidProcesses;
-import com.pax.ipp.tools.AppFlow;
 import com.pax.ipp.tools.Constant;
 import com.pax.ipp.tools.R;
 import com.pax.ipp.tools.adapter.FlowListAdapter;
 import com.pax.ipp.tools.model.AppProcessInfo;
+import com.pax.ipp.tools.model.BaseFlowModel;
 import com.pax.ipp.tools.model.FlowModel;
 import com.pax.ipp.tools.mvp.impl.Presenter;
 import com.pax.ipp.tools.ui.base.BaseFragment;
 import com.pax.ipp.tools.ui.view.FixedRecyclerView;
 import com.pax.ipp.tools.ui.view.Loading_view;
-import com.pax.ipp.tools.utils.AppUtils;
 import com.pax.ipp.tools.utils.DateUtil;
 import com.pax.ipp.tools.utils.FlowUtil;
 import com.pax.ipp.tools.utils.LogUtil;
@@ -59,28 +55,23 @@ public class FlowFragment extends BaseFragment {
 
     List<FlowModel> lists=new ArrayList<FlowModel>();
 
-    static final String FLAG_TIME = "flag_time";
+    final String FLAG_TIME = "flag_time";
 
     boolean flag = false;
 
-    public static FlowFragment newInstance(boolean flag) {
-        Bundle arguments = new Bundle();
-        arguments.putBoolean(FLAG_TIME,flag);
-        FlowFragment fragment = new FlowFragment();
-        fragment.setArguments(arguments);
-        return fragment;
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mContext = activity;
-    }
+//    public static FlowFragment newInstance(boolean flag) {
+//        Bundle arguments = new Bundle();
+//        arguments.putBoolean(FLAG_TIME,flag);
+//        FlowFragment fragment = new FlowFragment();
+//        fragment.setArguments(arguments);
+//        return fragment;
+//    }
 
     @Override
     protected int getLayoutView() {
         return R.layout.fixed_recycler_view;
     }
+
 
     @Override
     protected Presenter getPresenter() {
@@ -107,8 +98,7 @@ public class FlowFragment extends BaseFragment {
 
     @Override
     protected void onFragmentVisibleChange(boolean isVisible) {
-        super.onFragmentVisibleChange(isVisible);
-        if (isVisible &!flag){
+        if (isVisible && !flag){
 
 //            scanChache();
             getFlowApp();
@@ -169,7 +159,8 @@ public class FlowFragment extends BaseFragment {
                     model.setmPackageName(packName);
                     model.setmApplicationName(appName);
 
-                    long flows= FlowUtil.getInstance().getTodayBytesByUid(mContext,appProcessInfo.uid,packName);
+//                    long flows= FlowUtil.getInstance().getTodayBytesByUid(mContext,appProcessInfo.uid,packName);
+                    long flows=0;
 //                   long flows= FlowUtil.getBytesByUid(mContext,appProcessInfo.uid,
 //                            FlowUtil.getTimesMonthMorning(),System.currentTimeMillis());
                     LogUtil.e("flow","uid="+appProcessInfo.uid+" appName="+appName+" flows="+ flows);
@@ -254,137 +245,6 @@ public class FlowFragment extends BaseFragment {
     /**
      *
      */
-    public void scanChache(){
-        loading_view.show();
-        Observable<List<FlowModel>> appProcessInfoObservable = Observable.create(
-                new Observable.OnSubscribe<List<FlowModel>>() {
-                    @Override
-                    public void call(Subscriber<? super List<FlowModel>> subscriber) {
-                       ArrayList<FlowModel> listss = new ArrayList<FlowModel>();
-                        FlowModel model=null;
-                        ApplicationInfo appInfo = null;
-                        //得到所有正在运行的进程
-                        List<ActivityManager.RunningAppProcessInfo> appProcessList
-                                = AndroidProcesses.getRunningAppProcessInfo(mContext);
-
-                        for (ActivityManager.RunningAppProcessInfo appProcessInfo : appProcessList) {
-
-                            model = new FlowModel();
-                            String packName = appProcessInfo.processName;
-                            try {
-                                appInfo = packageManager.getApplicationInfo(
-                                        appProcessInfo.processName, 0);
-//                                if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
-//                                    abAppProcessInfo.isSystem = true;
-//                                } else {
-//                                    abAppProcessInfo.isSystem = false;
-//                                }
-                                Drawable icon = appInfo.loadIcon(packageManager);
-                                String appName = appInfo.loadLabel(packageManager)
-                                        .toString();
-
-                                model.setmIcon(icon);
-                                model.setmPackageName(packName);
-                                model.setmApplicationName(appName);
-
-                                long flows = 0;
-                                if (getArguments().getBoolean(FLAG_TIME)){//今日
-                                    flows = FlowUtil.getInstance().getTodayBytesByUid(mContext,appProcessInfo.uid,packName);
-                                }else {//月
-                                    flows = FlowUtil.getInstance().getMonthBytesByUid(mContext,appProcessInfo.uid,packName);
-                                }
-                                LogUtil.e("flow", "uid=" + appProcessInfo.uid + " appName=" + appName + " flows=" + flows);
-                                model.setFlowSize(flows);
-//                                publishProgress(0, lists.size(), 0, "开始扫描");
-                                if (flows>0){
-                                    listss.add(model);
-                                }
-                                //abAppProcessInfo.packName = packName;
-                            } catch (PackageManager.NameNotFoundException e) {
-//
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            } finally {
-                            }
-                        }
-                subscriber.onNext(listss);
-                    }
-                });
-        Observer<List<FlowModel>> observer = new Observer<List<FlowModel>>() {
-            @Override
-            public void onCompleted() {
-                loading_view.dismiss();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                loading_view.dismiss();
-            }
-
-            @Override
-            public void onNext(List<FlowModel> flowModelList) {
-                loading_view.dismiss();
-                flag=true;
-                lists.clear();
-
-
-                // 排序
-                Collections.sort(flowModelList,
-                                        new Comparator<FlowModel>() {
-                    @Override
-                    public int compare(FlowModel o1, FlowModel o2) {
-                        return new Double(o1.getFlowSize()).compareTo(new Double(o2.getFlowSize()));
-                    }}
-                );
-                Collections.reverse(flowModelList);
-
-
-                LogUtil.e("flow",flowModelList.size()+"");
-                lists.addAll(flowModelList);
-                flowListAdapter.setList(flowModelList);
-                flowListAdapter.notifyDataSetChanged();
-
-            }
-        };
-
-        appProcessInfoObservable.subscribeOn(Schedulers.io()).observeOn(
-                AndroidSchedulers.mainThread()).subscribe(
-                observer );
-    }
-
-
-private void setAdapter(){
-    loading_view.show();
-    flag=true;
-    lists.clear();
-    if (Constant.flowHistoryList!=null){
-
-    }
-
-
-//
-//    // 排序
-//    Collections.sort(flowModelList,
-//            new Comparator<FlowModel>() {
-//                @Override
-//                public int compare(FlowModel o1, FlowModel o2) {
-//                    return new Double(o1.getFlowSize()).compareTo(new Double(o2.getFlowSize()));
-//                }}
-//    );
-//    Collections.reverse(flowModelList);
-//    loading_view.dismiss();
-//
-//    LogUtil.e("flow",flowModelList.size()+"");
-//    lists.addAll(flowModelList);
-//    flowListAdapter.setList(flowModelList);
-//    flowListAdapter.notifyDataSetChanged();
-}
-
-
-
-    /**
-     *
-     */
     public void getFlowApp(){
         loading_view.show();
         Observable<List<FlowModel>> appProcessInfoObservable = Observable.create(
@@ -395,26 +255,32 @@ private void setAdapter(){
                         FlowModel model=null;
                         ApplicationInfo appInfo = null;
                         PackageManager packageManager =mContext.getPackageManager();
-                        Map<String,Map<String,Long>> flowHistoryList=new HashMap<String,Map<String,Long>>();//所有的历史流量信息
-                        flowHistoryList = FlowUtil.getInstance().getFlowTotailUid(mContext);
+                        Map<String,Map<String,BaseFlowModel>> flowHistoryList=new HashMap<String,Map<String,BaseFlowModel>>();//所有的历史流量信息
+//                        flowHistoryList = FlowUtil.getInstance().getFlowTotailUid(mContext);
+                        flowHistoryList.clear();
+                        flowHistoryList.putAll(Constant.flowHistoryList);
+                        LogUtil.d("fragment_f",Constant.flowHistoryList==null?"null":Constant.flowHistoryList.toString());
                             if (flowHistoryList != null) {
                                 Iterator iter = flowHistoryList.entrySet().iterator();
                                 while (iter.hasNext()) {
                                     Map.Entry entry = (Map.Entry) iter.next();
                                     String packageName = (String) entry.getKey();
-                                    Map<String, Long> appValues = (Map<String, Long>) entry.getValue();
-                                    LogUtil.d("AppFlow", "-packageName=" + packageName + "  appValues=" + appValues.toString());
+                                    Map<String, BaseFlowModel> appValues = (Map<String, BaseFlowModel>) entry.getValue();
+                                    LogUtil.d("TrafficFlowBean", "-packageName=" + packageName + "  appValues=" + appValues.toString());
 
                                     long flows = 0;
-                                    if (getArguments().getBoolean(FLAG_TIME)){//今日
-                                        flows = FlowUtil.getInstance().getTodayBytesByUid(mContext,flowHistoryList,0,packageName);
-
-//                                        long flows= FlowUtil.getInstance().getSystemBytesByUid(mContext,appProcessInfo.uid,
-//                                                FlowUtil.getInstance().getTimesMonthMorning(),System.currentTimeMillis());
-
-                                    }else {//月
-                                        flows = FlowUtil.getInstance().getMonthBytesByUid(mContext,flowHistoryList,0,packageName);
-                                    }
+                                    BaseFlowModel baseFlowModel=FlowUtil.getInstance().getBytesByUidOneDay(mContext,flowHistoryList,packageName, DateUtil.getToday());
+                                   if (baseFlowModel==null){
+                                       flows=0;
+                                   }else {
+                                       if (getArguments().getBoolean(FLAG_TIME)) {//今日
+//                                        flows = FlowUtil.getInstance().getTodayBytesByUid(mContext,flowHistoryList,packageName);
+                                           flows = baseFlowModel.getFlowMobileD() + baseFlowModel.getFlowWifiD();
+                                       } else {//月
+//                                        flows = FlowUtil.getInstance().getMonthBytesByUid(mContext,flowHistoryList,packageName);
+                                           flows = baseFlowModel.getFlowSize();
+                                       }
+                                   }
                                     LogUtil.e("flow_fragment",  " packageName=" + packageName + " flows=" + flows);
 
                                     ApplicationInfo application= null;
@@ -429,7 +295,6 @@ private void setAdapter(){
                                     } catch (PackageManager.NameNotFoundException e) {
                                         e.printStackTrace();
                                     }
-//        String[] appInfo=new String[]{packageName,application.loadLabel(packageManager).toString()};
                             }
                         }
                         subscriber.onNext(listss);
@@ -449,9 +314,11 @@ private void setAdapter(){
             @Override
             public void onNext(List<FlowModel> flowModelList) {
                 loading_view.dismiss();
-                flag=true;
-                lists.clear();
+                if(flowModelList==null||flowModelList.size()==0){
+                    flag=false;
+                }else flag=true;
 
+                lists.clear();
 
                 // 排序
                 Collections.sort(flowModelList,

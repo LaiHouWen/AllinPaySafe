@@ -1,11 +1,15 @@
 package com.pax.ipp.tools.service;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.text.TextUtils;
 
 import com.pax.ipp.tools.Constant;
+import com.pax.ipp.tools.mvp.presenter.CircularLoaderPresenter;
 import com.pax.ipp.tools.utils.DateUtil;
 import com.pax.ipp.tools.utils.LogUtil;
 import com.pax.ipp.tools.utils.SharedPreUtils;
@@ -39,9 +43,25 @@ public class RequestAlarmReceiver extends BroadcastReceiver {
             LogUtil.e(TAG,"启动程序 闹钟 定时====");
             context.startService(new Intent(context, SaveFlowService.class).
                     putExtra(Constant.TIME_TEMP, DateUtil.getToday()));
+
+//            Intent intent_1 =new Intent(context, SaveFlowService.class);
+//            context.bindService(intent_1,connection, Context.BIND_AUTO_CREATE);
+
+        }
+    }
+    private SaveFlowService saveFlowService;
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            saveFlowService
+                    = ((SaveFlowService.CleanerServiceBinder) service).getService();
+            saveFlowService.saveFlowDate( DateUtil.getToday());
         }
 
-    }
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
 
+        }
+    };
 
 }

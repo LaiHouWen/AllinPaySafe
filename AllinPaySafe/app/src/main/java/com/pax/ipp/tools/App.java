@@ -8,18 +8,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.View;
 
-import com.pax.ipp.tools.service.AppFlowService;
+import com.pax.ipp.tools.service.TrafficAidlService;
 import com.pax.ipp.tools.service.RequestAlarmReceiver;
 import com.pax.ipp.tools.service.SaveFlowService;
 import com.pax.ipp.tools.utils.DateUtil;
 import com.pax.ipp.tools.utils.FlowUtil;
 
 import java.util.Calendar;
+
+import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
+
 /**
  * Created by houwen.lai on 2017/8/31.
  *
@@ -40,6 +41,8 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        //Install CustomActivityOnCrash
+        CustomActivityOnCrash.install(this);
 
         Constant.flowTodayMonth = FlowUtil.getInstance().getFlowTotail(this);
         Constant.flowHistoryList = FlowUtil.getInstance().getFlowTotailUid(this);
@@ -74,23 +77,23 @@ public class App extends Application {
         long triggerAtTime = SystemClock.elapsedRealtime();
 
         am.setRepeating(AlarmManager.RTC_WAKEUP, triggerAtTime,
-                30*60*1000, sender);
+                3*60*1000, sender);
 
 //        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
 //                INTERVAL, sender);
 
     }
 
-    private AppFlowManager appFlowManager;
+    private TrafficFlowManager trafficFlowManager;
     public void bindService() {
-        Intent intent = new Intent(this, AppFlowService.class);
+        Intent intent = new Intent(this, TrafficAidlService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override public void onServiceConnected(ComponentName name, IBinder service) {
             Log.e("aidl", "绑定开始");
-            appFlowManager = AppFlowManager.Stub.asInterface(service);
+            trafficFlowManager = TrafficFlowManager.Stub.asInterface(service);
 //            try {
 
 //                bookManager.registerListener(mOnNewBookArrivedListener);
@@ -100,7 +103,7 @@ public class App extends Application {
         }
 
         @Override public void onServiceDisconnected(ComponentName name) {
-            appFlowManager=null;
+            trafficFlowManager=null;
             Log.e("aidl", "绑定结束");
         }
     };

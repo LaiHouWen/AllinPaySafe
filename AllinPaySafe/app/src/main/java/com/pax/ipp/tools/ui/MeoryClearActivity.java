@@ -120,9 +120,8 @@ public class MeoryClearActivity extends RubbishActivity {
             actionBar.setDisplayShowTitleEnabled(false);
         }
 
-
         loading_view = new Loading_view(mContext,R.style.CustomDialog);
-
+        loading_view.setTv_load_dialog("清理中...");
 
         checbox_all.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -350,6 +349,7 @@ public class MeoryClearActivity extends RubbishActivity {
         for (int i=0;i<recyclerAdapter.getList().size();i++){
             recyclerAdapter.getList().get(i).setIsChoise(flag);
         }
+        recyclerAdapter.setFlagAllTrue(flag);
         recyclerAdapter.notifyDataSetChanged();
     }
 

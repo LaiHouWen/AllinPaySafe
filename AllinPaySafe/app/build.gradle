@@ -12,7 +12,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1
-        versionName "V1.00.00_T_20170914"
+        versionName "V1.00.00_T_20170919"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -89,10 +89,10 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha7'
     compile 'com.android.support:design:25.3.1'
-    compile 'com.android.support:cardview-v7:25.0.0'
+    compile 'com.android.support:cardview-v7:25.3.1'
     testCompile 'junit:junit:4.12'
 //
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
@@ -132,7 +132,8 @@ dependencies {
     //
     compile 'com.jaredrummler:android-processes:1.0.9'
 
-
+    //崩溃界面
+    compile 'cat.ereza:customactivityoncrash:1.5.0'
     //
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.8'
     compile project(path: ':FlycoTabLayout_Lib')

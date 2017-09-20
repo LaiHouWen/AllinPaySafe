@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.pax.ipp.tools.mvp.impl.Presenter;
+import com.pax.ipp.tools.utils.LogUtil;
 
 import butterknife.ButterKnife;
 
@@ -53,6 +54,17 @@ public abstract class BaseFragment extends Fragment
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.mContext=context;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initVariable();
@@ -76,7 +88,9 @@ public abstract class BaseFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         getPresenter();
+        LogUtil.d("fragment","onViewCreated");
         if (!hasCreateView && getUserVisibleHint()) {
+            isVisible();
             onFragmentVisibleChange(true);
             isFragmentVisible = true;
         }
@@ -90,6 +104,11 @@ public abstract class BaseFragment extends Fragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     private void initVariable() {

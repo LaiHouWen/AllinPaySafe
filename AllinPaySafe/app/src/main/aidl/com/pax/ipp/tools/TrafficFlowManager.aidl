@@ -1,11 +1,11 @@
 // AppFlowManager.aidl
 package com.pax.ipp.tools;
 
-import com.pax.ipp.tools.AppFlow;
+import com.pax.ipp.tools.TrafficFlowBean;
 
 // Declare any non-default types here with import statements
 
-interface AppFlowManager {
+interface TrafficFlowManager {
     /**
      * Demonstrates some basic types that you can use as parameters
      * and return values in AIDL.
@@ -13,13 +13,10 @@ interface AppFlowManager {
 //    void basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat,
 //            double aDouble, String aString);
 
-    List<AppFlow> getAppFlowList(); // 返回各个app流量列表
+    List<TrafficFlowBean> getDayFlow(); // 获取各app当日流量使用情况
 
-    String getAppFlowJsonString();//返回各个app流量列表转化成jsonstring
+    List<TrafficFlowBean> getWeekFlow();//获取各app过去七日的流量使用情况
 
-    long getTodayAppFlow();//返回今天的总流量
-
-    long getMonthAppFlow();//返回本月的总流量
-
+    List<TrafficFlowBean>  getMonthFlow();//获取各app本月流量使用情况
 
 }

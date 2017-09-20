@@ -20,6 +20,7 @@ import com.mikhaellopez.circularfillableloaders.CircularFillableLoaders;
 import com.pax.ipp.tools.AppManager;
 import com.pax.ipp.tools.Constant;
 import com.pax.ipp.tools.R;
+import com.pax.ipp.tools.model.MonthFlowModel;
 import com.pax.ipp.tools.mvp.impl.CircularLoaderView;
 import com.pax.ipp.tools.mvp.presenter.CircularLoaderPresenter;
 import com.pax.ipp.tools.ui.base.BaseActivity;
@@ -85,12 +86,7 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
     protected void onResume() {
         super.onResume();
         //流量使用情况
-        if (Constant.flowTodayMonth!=null&&Constant.flowTodayMonth.containsKey(DateUtil.getToday())) {
-            long flowToday = FlowUtil.getInstance().getTodayBytes(this);
-            tv_today_useing_d.setText(TextFormater.dataSizeFormat(flowToday));//今日消耗的流量
-            long flowMonth = FlowUtil.getInstance().getMonthBytes(this);
-            tv_month_useing_d.setText(TextFormater.dataSizeFormat(flowMonth));//本月的总流量
-        }
+        setDayFlow();
     }
 
     @Override
@@ -102,6 +98,9 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
     public void initView(Bundle savedInstanceState) {
         AppManager.getAppManager().addActivity(this);
         cirLoaders.setProgress(0);
+
+        Constant.flowTodayMonth = FlowUtil.getInstance().getFlowTotail(this);
+        Constant.flowHistoryList = FlowUtil.getInstance().getFlowTotailUid(this);
 
         cirPresenter =new CircularLoaderPresenter(this);
         cirPresenter.attachView(this);
@@ -134,11 +133,11 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         AppManager.getAppManager().finishAllActivity();
-        FlowUtil.getInstance().saveFlowDate(mContext,DateUtil.getToday());//保存总流量
-        FlowUtil.getInstance().saveFlowUidBytes(mContext);
+        FlowUtil.getInstance().saveAppFlowByte(mContext,Constant.flowTodayMonth);//保存总流量
+        FlowUtil.getInstance().saveFlowUidBytes(mContext,Constant.flowHistoryList);
         cirPresenter.onDestroy();
+        super.onDestroy();
     }
 
     //    @Override
@@ -183,10 +182,12 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
                 break;
             case R.id.tv_today_useing://今日流量
             case R.id.tv_today_useing_d:
+                if (Constant.flowHistoryList!=null&&Constant.flowHistoryList.size()>0)
                 startActivity(new Intent(mContext,FlowActivity.class).putExtra("time","today"));
                 break;
             case R.id.tv_month_useing://本月流量
             case R.id.tv_month_useing_d:
+                if (Constant.flowHistoryList!=null&&Constant.flowHistoryList.size()>0)
                 startActivity(new Intent(mContext,FlowActivity.class).putExtra("time","month"));
                 break;
             case R.id.tv_more_detail://清除流量
@@ -255,16 +256,7 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
         tv_ware_merory.setText("" + TextFormater.dataSizeFormat(sum - available) + "/" +
                 TextFormater.dataSizeFormat(sum));//使用情况
 
-        //流量使用情况
-//        tv_today_useing_d.setText("0MB");//今日消耗的流量
-//        tv_month_useing_d.setText("0MB");//本月的总流量
-        //流量使用情况
-        if (Constant.flowTodayMonth!=null&&Constant.flowTodayMonth.containsKey(DateUtil.getToday())) {
-            long flowToday = FlowUtil.getInstance().getTodayBytes(this);
-            tv_today_useing_d.setText(TextFormater.dataSizeFormat(flowToday));//今日消耗的流量
-            long flowMonth = FlowUtil.getInstance().getMonthBytes(this);
-            tv_month_useing_d.setText(TextFormater.dataSizeFormat(flowMonth));//本月的总流量
-        }
+        setDayFlow();
     }
 
     @Override
@@ -277,5 +269,17 @@ public class HomeActivity extends BaseActivity implements PopupMenu.OnMenuItemCl
 
     }
 
-
+    public void setDayFlow(){
+        //流量使用情况
+        if (Constant.flowTodayMonth!=null&&Constant.flowTodayMonth.containsKey(DateUtil.getToday())) {
+            MonthFlowModel model = FlowUtil.getInstance().getMonthBytesByDtate(mContext,Constant.flowTodayMonth,DateUtil.getToday());
+            long flowToday = model==null?0:model.getFlowMobileD()+model.getFlowWifiD();
+            tv_today_useing_d.setText(TextFormater.dataSizeFormat(flowToday));//今日消耗的流量
+            long flowMonth = model==null?0:model.getFlowSize();
+            tv_month_useing_d.setText(TextFormater.dataSizeFormat(flowMonth));//本月的总流量
+        }else{
+            tv_today_useing_d.setText(TextFormater.dataSizeFormat(0));//今日消耗的流量
+            tv_month_useing_d.setText(TextFormater.dataSizeFormat(0));//本月的总流量
+        }
+    }
 }

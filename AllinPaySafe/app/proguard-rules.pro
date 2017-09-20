@@ -164,4 +164,4 @@
 
 #aidl
 -keep class com.pax.ipp.tools.AppFlowManager{ *; }
--keep class com.pax.ipp.tools.AppFlow{ *; }
+-keep class com.pax.ipp.tools.TrafficFlowBean{ *; }

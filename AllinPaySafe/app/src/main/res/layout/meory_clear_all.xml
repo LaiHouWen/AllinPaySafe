@@ -45,9 +45,11 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="58dp"
-        android:paddingTop="48dp"
-        android:paddingBottom="10dp">
+        android:layout_marginTop="88dp"
+        android:paddingBottom="0dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <TextView
             android:id="@+id/tv_ariable_meory_c"
@@ -65,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-            android:paddingBottom="15dp"
+            android:paddingBottom="18dp"
             android:layout_marginLeft="5dp"
             android:layout_toRightOf="@id/tv_ariable_meory_c"
             android:text="B"
@@ -99,6 +101,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
+        android:layout_marginBottom="10dp"
         android:text="@string/text_clear_memery"
         android:textColor="@color/white"
         android:textSize="16sp"

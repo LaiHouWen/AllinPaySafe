@@ -1,6 +1,8 @@
 package com.pax.ipp.tools.utils;
 
 import com.google.gson.Gson;
+import com.pax.ipp.tools.model.BaseFlowModel;
+import com.pax.ipp.tools.model.MonthFlowModel;
 
 import java.util.Map;
 
@@ -34,7 +36,7 @@ public class GsonUtil {
         String jsonStr = gson.toJson(map);
         return jsonStr;
     }
-    public static String mapToJsonString(Map<String, Long> map) {
+    public static String mapToJsonString(Map<String, MonthFlowModel> map) {
         Gson gson = new Gson();
         String jsonStr = gson.toJson(map);
         return jsonStr;
@@ -51,6 +53,11 @@ public class GsonUtil {
         return jsonStr;
     }
     public static String mapToJsonIntegerString(Map<String, Map<String,Long>> map) {
+        Gson gson = new Gson();
+        String jsonStr = gson.toJson(map);
+        return jsonStr;
+    }
+    public static String mapToJsonIntegerModel(Map<String, Map<String,BaseFlowModel>> map) {
         Gson gson = new Gson();
         String jsonStr = gson.toJson(map);
         return jsonStr;

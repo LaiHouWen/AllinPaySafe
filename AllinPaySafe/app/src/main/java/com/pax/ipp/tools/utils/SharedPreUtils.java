@@ -17,7 +17,10 @@ public class SharedPreUtils {
 
     public static SharedPreUtils getInstanse() {
         if (preferencesUtils == null) {
-            preferencesUtils = new SharedPreUtils();
+            synchronized (SharedPreUtils.class){
+                if (preferencesUtils == null)
+                    preferencesUtils = new SharedPreUtils();
+            }
         }
         return preferencesUtils;
     }

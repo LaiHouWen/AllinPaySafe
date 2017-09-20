@@ -80,10 +80,10 @@
         </receiver>
         <receiver android:name="com.pax.ipp.tools.service.RequestAlarmReceiver" >
         </receiver>
-        <service android:name=".service.AppFlowService"
+        <service android:name=".service.TrafficAidlService"
             android:process=":remote">
             <intent-filter>
-                <action android:name="com.pax.ipp.aidl"/>
+                <action android:name="com.pax.trafficmanage.TrafficAidlService"/>
             </intent-filter>
         </service>
 

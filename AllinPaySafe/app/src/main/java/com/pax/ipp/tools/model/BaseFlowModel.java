@@ -15,16 +15,40 @@ public class BaseFlowModel implements Serializable {
     private String date;//日期
     private long flowWifi;//wifi流量
     private long flowMobile;//移动数据
+    private long flowWifiD;//wifi流量当天
+    private long flowMobileD;//移动数据当天
     private long flowSize;//总流量
+    private long flowSizeTemp;//开机清零流量
+    private String typeNet;//网络状态
 
-
-    public BaseFlowModel(int uid, String packageName, String appName, String date, long flowWifi, long flowMobile) {
+    public BaseFlowModel(int uid, String packageName, String appName, String date, long flowWifi, long flowMobile, long flowWifiD, long flowMobileD, long flowSize, long flowSizeTemp, String typeNet) {
         this.uid = uid;
         this.packageName = packageName;
         this.appName = appName;
         this.date = date;
         this.flowWifi = flowWifi;
         this.flowMobile = flowMobile;
+        this.flowWifiD = flowWifiD;
+        this.flowMobileD = flowMobileD;
+        this.flowSize = flowSize;
+        this.flowSizeTemp = flowSizeTemp;
+        this.typeNet = typeNet;
+    }
+
+    public long getFlowWifiD() {
+        return flowWifiD;
+    }
+
+    public void setFlowWifiD(long flowWifiD) {
+        this.flowWifiD = flowWifiD;
+    }
+
+    public long getFlowMobileD() {
+        return flowMobileD;
+    }
+
+    public void setFlowMobileD(long flowMobileD) {
+        this.flowMobileD = flowMobileD;
     }
 
     public int getUid() {
@@ -83,6 +107,22 @@ public class BaseFlowModel implements Serializable {
         this.flowSize = flowSize;
     }
 
+    public String getTypeNet() {
+        return typeNet;
+    }
+
+    public void setTypeNet(String typeNet) {
+        this.typeNet = typeNet;
+    }
+
+    public long getFlowSizeTemp() {
+        return flowSizeTemp;
+    }
+
+    public void setFlowSizeTemp(long flowSizeTemp) {
+        this.flowSizeTemp = flowSizeTemp;
+    }
+
     @Override
     public String toString() {
         return "BaseFlowModel{" +
@@ -92,7 +132,11 @@ public class BaseFlowModel implements Serializable {
                 ", date='" + date + '\'' +
                 ", flowWifi=" + flowWifi +
                 ", flowMobile=" + flowMobile +
+                ", flowWifiD=" + flowWifiD +
+                ", flowMobileD=" + flowMobileD +
                 ", flowSize=" + flowSize +
+                ", flowSizeTemp=" + flowSizeTemp +
+                ", typeNet='" + typeNet + '\'' +
                 '}';
     }
 }

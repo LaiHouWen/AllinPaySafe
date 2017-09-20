@@ -74,7 +74,7 @@ public class RubbishCleanPresenter implements Presenter,
             mCleanerService.setOnActionListener(RubbishCleanPresenter.this);
             flagConnection=true;
 //              updateStorageUsage();
-
+            LogUtil.d("rubbish-","扫描时间是onServiceConnected="+System.currentTimeMillis());
             //绑定service 扫描内存
             if (!mCleanerService.isScanning() && !mAlreadyScanned) {
                 mCleanerService.scanCache();
@@ -199,6 +199,7 @@ public class RubbishCleanPresenter implements Presenter,
 
     @Override
     public void onScanStarted(Context context) {
+        LogUtil.d("rubbish-","扫描时间是onScanStarted="+System.currentTimeMillis());
         mRubbishClean.onScanStarted(context);
         mRubbishClean.startRefresh();
         mRubbishClean.enableSwipeRefreshLayout(false);
@@ -273,8 +274,8 @@ public class RubbishCleanPresenter implements Presenter,
      */
     public void cleanMemory(String type) {
 
-        new clearApp().execute(type);
-
+//        new clearApp().execute(type);
+        new clearApp().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,type);
 //
 //                long killAppmemory = 0;
 //                long count = 0;
@@ -343,6 +344,7 @@ public class RubbishCleanPresenter implements Presenter,
                    recyclerAdapter.remove(cacheListItems.get(i));
                }
                mCacheListItems.removeAll(cacheListItems);
+               recyclerAdapter.setFlagAllTrue(false);
                recyclerAdapter.notifyDataSetChanged();
            }
             //MeoryClearActivity.class

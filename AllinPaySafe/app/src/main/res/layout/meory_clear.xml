@@ -2,14 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <include layout="@layout/view_meory_text"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="6dp">
+        android:background="@color/white"
+        android:paddingBottom="0dp">
 
         <!--<include layout="@layout/fixed_recycler_view" />-->
 
@@ -33,7 +35,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:background="@mipmap/icon_nav_bottom"
+            android:paddingTop="5dp"
+            android:paddingBottom="6dp"
+            android:background="@color/white"
             android:gravity="center">
 
             <Button

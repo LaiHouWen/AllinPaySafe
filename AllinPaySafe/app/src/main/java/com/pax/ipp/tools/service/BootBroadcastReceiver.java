@@ -41,6 +41,11 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
             //example:启动程序
             LogUtil.e(TAG,"开机了");
 
+            LogUtil.e(TAG,"启动程序 闹钟 定时====");
+            context.startService(new Intent(context, SaveFlowService.class).
+                    putExtra(Constant.TIME_TEMP, DateUtil.getToday())
+                    .putExtra(Constant.TIME_TEMP_INIT,Constant.TIME_TEMP_INIT));
+
             String today = DateUtil.getToday();
             String lastDate = SharedPreUtils.getInstanse().getKeyValue(context,Constant.Time_ShunDown);
             if (!TextUtils.isEmpty(lastDate)&&lastDate.equals(today)){//今天开关机
@@ -79,8 +84,8 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
                 SharedPreUtils.getInstanse().putKeyValue(context, Constant.Time_Availble, type);
             }
 
-            FlowUtil.getInstance().saveFlowDate(context,type);//保存总流量
-            FlowUtil.getInstance().saveFlowUidBytes(context);
+            FlowUtil.getInstance().saveAppFlowByte(context,Constant.flowTodayMonth);//保存总流量
+            FlowUtil.getInstance().saveFlowUidBytes(context,Constant.flowHistoryList);
 
             context.startService(new Intent(context, SaveFlowService.class).
                     putExtra(Constant.TIME_TEMP,type));
@@ -126,6 +131,7 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
 
 //        am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
 //                INTERVAL, sender);
+
 
     }
 

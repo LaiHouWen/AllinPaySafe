@@ -13,6 +13,7 @@ import com.pax.ipp.tools.R;
 import com.pax.ipp.tools.adapter.base.BaseRecyclerViewAdapter;
 import com.pax.ipp.tools.adapter.viewholder.ProcessItemViewHolder;
 import com.pax.ipp.tools.model.CacheListItem;
+import com.pax.ipp.tools.utils.LogUtil;
 import com.pax.ipp.tools.utils.TextFormater;
 
 import java.util.List;
@@ -24,16 +25,31 @@ import java.util.List;
 public class CacheListAdapter extends BaseRecyclerViewAdapter<CacheListItem> {
     private Context mContext;
 
+    private Boolean[] flagArray = new Boolean[]{};
+
+    public void setFlagAllTrue(boolean flag){
+        if (flagArray==null)return;
+        for (int i=0;i<flagArray.length;i++){
+            flagArray[i]=flag;
+        }
+    }
 
     public CacheListAdapter(List<CacheListItem> list) {
         super(list);
+        if (list!=null) {
+            flagArray = new Boolean[list.size()];
+            setFlagAllTrue(false);
+        }
     }
 
 
     public CacheListAdapter(List<CacheListItem> list, Context context) {
         super(list, context);
+        if (list!=null) {
+            flagArray = new Boolean[list.size()];
+            setFlagAllTrue(false);
+        }
     }
-
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -56,17 +72,23 @@ public class CacheListAdapter extends BaseRecyclerViewAdapter<CacheListItem> {
         holder.setMemory(
                 TextFormater.dataSizeFormat(cacheListItem.getCacheSize()));
         holder.setCheckBoxVisible(true);
-        holder.setChecked(cacheListItem.getIsChoise());
-
-        animate(viewHolder, position);
-
+        holder.setCheckBoxChangeListern(null);
+        holder.setChecked(flagArray[position]);//cacheListItem.getIsChoise()
+        LogUtil.i("cacheList position="+position+" flag="+flagArray[position]);
         holder.setCheckBoxChangeListern(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                list.get(position).setIsChoise(isChecked);
-//                notifyDataSetChanged();
+                LogUtil.i("cacheListAdapter  position="+position+"  is="+isChecked);
+                if (list.size()>position){
+                    flagArray[position]=isChecked;
+                    list.get(position).setIsChoise(isChecked);
+
+//                    notifyDataSetChanged();
+                }
             }
         });
+
+//        animate(viewHolder, position);
     }
 
     @Override

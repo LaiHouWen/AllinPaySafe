@@ -1657,6 +1657,20 @@ public class DateUtil {
     }
 
     /**
+     * 获取前index天的日期
+     * 0今天
+     * 1昨天
+     * 2前天
+     * @param index
+     * @return
+     */
+    public static String getLastDay(int index) {
+        Date cDate = new Date();
+        cDate.setTime(cDate.getTime() - index*24 * 3600 * 1000);
+        SimpleDateFormat cSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return cSimpleDateFormat.format(cDate);
+    }
+    /**
      * 得到当前日期，格式yyyy-MM-dd。
      *
      * @return String 格式化的日期字符串

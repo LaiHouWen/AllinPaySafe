@@ -80,8 +80,20 @@ public class FlowActivity  extends BaseActivity {
             actionBar.setDisplayShowTitleEnabled(false);
         }
 
-        tabLayoutInit();
+//        tabLayoutInit();
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        tabLayoutInit();
+    }
+
+    @Override
+    protected void onDestroy() {
+        flowFragment_A=null;
+        flowFragment_B=null;
+        super.onDestroy();
     }
 
     @Override
@@ -98,12 +110,30 @@ public class FlowActivity  extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
+    FlowFragment flowFragment_A;
+    FlowFragment flowFragment_B;
+    static final String FLAG_TIME = "flag_time";
     private void tabLayoutInit() {
         mFragments.clear();
         mTabEntities.clear();
-        mFragments.add(FlowFragment.newInstance(true));//今日
-        mFragments.add(FlowFragment.newInstance(false));//本月
+
+        Bundle arguments = new Bundle();
+        arguments.putBoolean(FLAG_TIME,true);
+        flowFragment_A = new FlowFragment();
+        flowFragment_A.setArguments(arguments);
+
+        Bundle arguments_b = new Bundle();
+        arguments_b.putBoolean(FLAG_TIME,false);
+        flowFragment_B = new FlowFragment();
+        flowFragment_B.setArguments(arguments_b);
+        mFragments.add(flowFragment_A);//今日
+        mFragments.add(flowFragment_B);//本月
+
+
+//        flowFragment_A =FlowFragment.newInstance(true);
+//        flowFragment_B=FlowFragment.newInstance(false);
+//        mFragments.add(flowFragment_A);//今日
+//        mFragments.add(flowFragment_B);//本月
         for (int i = 0; i < mTitles.length; i++) {
             mTabEntities.add(new TabEntity(mTitles[i]));
         }

@@ -17,11 +17,15 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.StatFs;
+import android.support.annotation.NonNull;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.pax.ipp.tools.R;
+import com.pax.ipp.tools.http.base.AbsObservable;
+import com.pax.ipp.tools.http.base.AbsObserver;
+import com.pax.ipp.tools.http.base.OnAbsSubscribe;
 import com.pax.ipp.tools.model.AppProcessInfo;
 import com.pax.ipp.tools.model.CacheListItem;
 import com.pax.ipp.tools.model.FlowModel;
@@ -34,6 +38,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+
+import rx.Observable;
+import rx.Observer;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.observables.SyncOnSubscribe;
+import rx.schedulers.Schedulers;
 
 /**
  * 内存的清理 service
@@ -90,6 +102,7 @@ public class CleanerService extends Service {
 
         @Override
         protected void onPreExecute() {
+            LogUtil.d("rubbish-","扫描时间是onPreExecute="+System.currentTimeMillis());
             if (mOnActionListener != null) {
                 mOnActionListener.onScanStarted(CleanerService.this);
             }
@@ -99,14 +112,15 @@ public class CleanerService extends Service {
         @Override
         protected List<CacheListItem> doInBackground(Void... params) {
             mCacheSize = 0;
-
+            long time_start = System.currentTimeMillis();
+            LogUtil.d("rubbish-","扫描时间是="+time_start);
             final List<ApplicationInfo> packages
                     = getPackageManager().getInstalledApplications(
                     PackageManager.GET_META_DATA);
 
             publishProgress(0, packages.size(), 0, "开始扫描");
             //publishProgress(0, packages.size());
-
+            LogUtil.d("rubbish-","扫描时间间隔时间是="+(System.currentTimeMillis()-time_start));
             final CountDownLatch countDownLatch = new CountDownLatch(
                     packages.size());
 
@@ -124,9 +138,6 @@ public class CleanerService extends Service {
                                 public void onGetStatsCompleted(PackageStats pStats, boolean succeeded)
                                         throws RemoteException {
                                     synchronized (apps) {
-                                        //publishProgress(++mAppCount,
-                                        //        packages.size());
-
                                         if (succeeded && pStats.cacheSize > 0) {
                                             try {
                                                 apps.add(new CacheListItem(
@@ -389,12 +400,18 @@ public class CleanerService extends Service {
         return START_NOT_STICKY;
     }
 
-
+    private TaskScan taskScan;
     public void scanCache() {
         mIsScanning = true;
-        new TaskScan().execute();
+        LogUtil.d("rubbish-","scanCache="+System.currentTimeMillis());
+//        new TaskScan().execute();
+//        if (taskScan==null){
+//            taskScan = new TaskScan();
+//            taskScan.execute();
+//        }else taskScan.execute();
+//同步执行
+         new TaskScan().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
-
 
     public void cleanCache() {
         mIsCleaning = true;
@@ -471,36 +488,7 @@ public class CleanerService extends Service {
 
             long beforeMemory = 0;
             long endMemory = 0;
-//            ActivityManager.MemoryInfo memoryInfo
-//                    = new ActivityManager.MemoryInfo();
-//            activityManager.getMemoryInfo(memoryInfo);
-//            beforeMemory = memoryInfo.availMem;
-//            List<RunningAppProcessInfo> appProcessList
-//                    = AndroidProcesses.getRunningAppProcessInfo(mContext);
-//            ApplicationInfo appInfo = null;
-//            for (RunningAppProcessInfo info : appProcessList) {
-//                String packName = info.processName;
-//                if( info.processName.contains("com.android.system")
-//                        ||info.pid==android.os.Process.myPid())//跳过系统 及当前进程
-//                    continue;
-//                try {
-//                    packageManager.getApplicationInfo(info.processName, 0);
-//                } catch (PackageManager.NameNotFoundException e) {
-//                    appInfo = getApplicationInfo(info.processName.split(":")[0]);
-//                    if (appInfo != null) {
-//                        packName = info.processName.split(":")[0];
-//                    }
-//                }
-//                //忽略进程
-////                List<Ignore> ignores = mFinalDb.findAllByWhere(Ignore.class,
-////                        "packName='" + packName + "'");
-////                if (ignores.size() == 0) {
-//                    LogUtil.e(info.processName);
-//                    killBackgroundProcesses(info.processName);
-////                }
-//            }
-//            activityManager.getMemoryInfo(memoryInfo);
-//            endMemory = memoryInfo.availMem;
+
             return endMemory - beforeMemory;
         }
 
