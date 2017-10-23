@@ -69,7 +69,6 @@
             android:name=".service.SaveFlowService"
             android:exported="true"/>
 
-
         <receiver android:name="com.pax.ipp.tools.service.BootBroadcastReceiver" >
             <intent-filter>
                 <!-- 开机广播 -->
